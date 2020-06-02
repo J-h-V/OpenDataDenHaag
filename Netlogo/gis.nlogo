@@ -1,7 +1,9 @@
 extensions [ gis ]
 globals [ buurten-dataset neighborhoods-dataset]
 breed [ neighborhoods neighborhood ]
+breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
+neighborhoods-own [ population ]
 
 
 to setup
@@ -21,7 +23,8 @@ to setup
       [ create-neighborhoods 1
         [ set xcor item 0 centroid
           set ycor item 1 centroid
-          set size 8
+          ifelse gis:property-value vector-feature "total_citi" = 0 [set size 8] [set size exp ( 1 / 7000 * gis:property-value vector-feature "total_citi" ) + 7 ]
+          set population gis:property-value vector-feature "total_citi"
           set shape "house"
           set label gis:property-value vector-feature "BUURTNAAM"
         ]
@@ -30,6 +33,7 @@ to setup
   ; Set the world envelope to the union of all of our dataset's envelopes
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of buurten-dataset))
   reset-ticks
+  create-citizens 1 [set shape "person" set size 8]
 end
 
 ; Drawing point data from a shapefile
@@ -41,15 +45,20 @@ to display-buurten
   gis:set-drawing-color 4
   gis:fill buurten-dataset 1
 end
+
+to go
+  ask citizens[
+    move-to one-of neighborhoods]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-859
-660
+1601
+711
 -1
 -1
-1.25
+1.35
 1
 10
 1
@@ -59,8 +68,8 @@ GRAPHICS-WINDOW
 0
 0
 1
--256
-256
+-512
+512
 -256
 256
 0
@@ -72,7 +81,7 @@ ticks
 BUTTON
 11
 14
-74
+101
 47
 setup
 setup
@@ -89,7 +98,7 @@ NIL
 BUTTON
 11
 53
-205
+176
 86
 show them neighborhoods yo
 display-buurten
@@ -99,6 +108,23 @@ T
 OBSERVER
 NIL
 NIL
+NIL
+NIL
+1
+
+BUTTON
+105
+15
+175
+48
+go
+go
+T
+1
+T
+OBSERVER
+NIL
+G
 NIL
 NIL
 1
@@ -462,5 +488,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+1
 @#$#@#$#@
