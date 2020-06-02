@@ -1,7 +1,8 @@
 extensions [ gis ]
-globals [ buurten-dataset ]
-breed [ buurt-labels buurt-label ]
+globals [ buurten-dataset neighborhoods-dataset]
+breed [ neighborhoods neighborhood ]
 patches-own [ buurtcode buurtname ]
+
 
 to setup
   clear-all
@@ -10,19 +11,34 @@ to setup
   gis:load-coordinate-system "data/buurten.prj"
   ; Load all of our datasets
   set buurten-dataset gis:load-dataset "data/buurten.shp"
+  ;set neighborhoods-dataset gis:load-dataset "data/neighborhoods.shp"
+  foreach gis:feature-list-of buurten-dataset [ vector-feature ->
+      let centroid gis:location-of gis:centroid-of vector-feature
+      ; centroid will be an empty list if it lies outside the bounds
+      ; of the current NetLogo world, as defined by our current GIS
+      ; coordinate transformation
+      if not empty? centroid
+      [ create-neighborhoods 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set size 1
+          set shape "house"
+          ;set label gis:property-value vector-feature "BUURTNAME"
+        ]
+      ]
+    ]
   ; Set the world envelope to the union of all of our dataset's envelopes
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of buurten-dataset))
   reset-ticks
 end
 
-; Drawing point data from a shapefile, and optionally loading the
-; data into turtles, if label-cities is true
+; Drawing point data from a shapefile
 to display-buurten
   gis:set-drawing-color white
   gis:draw buurten-dataset 2
   gis:apply-coverage buurten-dataset "BUURTCODE" buurtcode
   gis:apply-coverage buurten-dataset "BUURTNAAM" buurtname
-  gis:set-drawing-color
+  gis:set-drawing-color 4
   gis:fill buurten-dataset 1
 end
 @#$#@#$#@
