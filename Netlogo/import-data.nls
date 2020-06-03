@@ -1,0 +1,72 @@
+to load-data  
+  ; Import all datasets
+  set nhc []
+  set shape-data gis:load-dataset "data/buurten.shp"
+  set housing-data csv:from-file "data/housing_data.csv" ;placeholder
+  foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
+  ;set citizen-data csv:from-file "data/myfile.csv" ;placeholder
+  ;set amenities-data csv:from-file "data/myfile.csv" ;placeholder
+end
+
+to import-data
+  ask neighborhoods[
+    print retrieve-data buurtcode "buurtname" housing-data
+  ]
+end
+
+to-report retrieve-data [bc variable dataset]
+  if population > 0 [
+    if not is-number? position bc nhc [error sentence bc "is no valid bc!"]
+    report item (position variable item 0 dataset) item ((position bc nhc) + 1) dataset]
+  ;Be aware, in the case that the neighborhood has no residents, it is not included in most datasets.
+  ;Therefore, running this procedure for a neighborhood without residents will always return 0.
+  if population < 1 [
+    report 0]
+end
+
+; Drawing point data from a shapefile
+to import-GIS-map
+  if count turtles < 1 [error "Did you press the setup first?"]
+  ; Note that setting the coordinate system here is optional, as
+  ; long as all of your datasets use the same coordinate system.
+  gis:load-coordinate-system "data/buurten.prj"
+  gis:set-drawing-color white
+  gis:draw shape-data 2
+  gis:apply-coverage shape-data "BUURTCODE" buurtcode
+  gis:apply-coverage shape-data "BUURTNAAM" buurtname
+  gis:set-drawing-color 4
+  gis:fill shape-data 1
+  ; Set the world envelope to the union of all of our dataset's envelopes
+  gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of shape-data))
+end
+
+
+to initialize-neighborhoods
+  foreach gis:feature-list-of shape-data [ vector-feature ->
+    let centroid gis:location-of gis:centroid-of vector-feature
+    ; centroid will be an empty list if it lies outside the bounds
+    ; of the current NetLogo world, as defined by our current GIS
+    ; coordinate transformation
+    if not empty? centroid
+    [ create-neighborhoods 1
+      [ set xcor item 0 centroid
+        set ycor item 1 centroid
+        set buurtnumber gis:property-value vector-feature "BUURTCODE"
+        ifelse gis:property-value vector-feature "total_citi" = 0 [set size 8] [set size exp ( 1 / 7000 * gis:property-value vector-feature "total_citi" ) + 7 ]
+        set population gis:property-value vector-feature "total_citi"
+        set shape "house"
+        set label gis:property-value vector-feature "BUURTNAAM"
+      ]
+    ]
+  ]
+end  
+
+to initialize-neighborhoods-data
+  ask neighborhoods[
+    set houses retrieve-data buurtcode "houses" housing-data
+    set avg_price retrieve-data buurtcode "avg_price" housing-data
+    set p_free retrieve-data buurtcode "p_free" housing-data
+    set owned_properties retrieve-data buurtcode "bought_houses" housing-data
+    set rented_properties retrieve-data buurtcode "rented_houses" housing-data
+  ]
+end

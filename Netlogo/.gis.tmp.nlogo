@@ -1,55 +1,17 @@
-extensions [ gis ]
-globals [ buurten-dataset neighborhoods-dataset]
+__includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
+extensions [ gis csv ]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ population ]
+neighborhoods-own [ buurtnumber population houses avg_price p_free owned_properties rented_properties]
+
+;Imagine looking at the source expecting a lot of code. This place is deserted.
+;Like, for real, what are you even looking for here?
 
 
-to setup
-  clear-all
-  ; Note that setting the coordinate system here is optional, as
-  ; long as all of your datasets use the same coordinate system.
-  gis:load-coordinate-system "data/buurten.prj"
-  ; Load all of our datasets
-  set buurten-dataset gis:load-dataset "data/buurten.shp"
-  ;set neighborhoods-dataset gis:load-dataset "data/neighborhoods.shp"
-  foreach gis:feature-list-of buurten-dataset [ vector-feature ->
-      let centroid gis:location-of gis:centroid-of vector-feature
-      ; centroid will be an empty list if it lies outside the bounds
-      ; of the current NetLogo world, as defined by our current GIS
-      ; coordinate transformation
-      if not empty? centroid
-      [ create-neighborhoods 1
-        [ set xcor item 0 centroid
-          set ycor item 1 centroid
-          ifelse gis:property-value vector-feature "total_citi" = 0 [set size 8] [set size egis:property-value vector-feature "total_citi" / 100 ]
-          set population gis:property-value vector-feature "total_citi"
-          set shape "house"
-          set label gis:property-value vector-feature "BUURTNAAM"
-        ]
-      ]
-    ]
-  ; Set the world envelope to the union of all of our dataset's envelopes
-  gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of buurten-dataset))
-  reset-ticks
-  create-citizens 1 [set shape "person" set size 8]
-end
 
-; Drawing point data from a shapefile
-to display-buurten
-  gis:set-drawing-color white
-  gis:draw buurten-dataset 2
-  gis:apply-coverage buurten-dataset "BUURTCODE" buurtcode
-  gis:apply-coverage buurten-dataset "BUURTNAAM" buurtname
-  gis:set-drawing-color 4
-  gis:fill buurten-dataset 1
-end
 
-to go
-  ask citizens[
-    move-to one-of neighborhoods]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -79,10 +41,10 @@ ticks
 30.0
 
 BUTTON
-11
-14
-101
-47
+10
+15
+100
+48
 setup
 setup
 NIL
@@ -100,8 +62,25 @@ BUTTON
 53
 176
 86
-show them neighborhoods yo
-display-buurten
+draw the map!
+import-GIS-map
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+10
+90
+100
+123
+clear-all
+clear-all
 NIL
 1
 T

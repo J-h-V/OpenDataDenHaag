@@ -1,0 +1,21 @@
+to setup
+  reset-model
+  load-data
+  initialize-neighborhoods
+  reset-ticks
+  create-citizens 1 [set shape "person" set size 8]
+end
+
+to reset-model
+  ;instead of using clear-all, this method prevents the deletion of the GIS map, which is process intensive to load back in. 
+  clear-turtles
+  clear-globals
+  clear-ticks
+  clear-all-plots
+  clear-output 
+end
+
+to go
+  ask citizens[
+    move-to one-of neighborhoods]
+end
