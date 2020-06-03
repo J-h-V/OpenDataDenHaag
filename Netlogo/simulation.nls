@@ -2,6 +2,7 @@ to setup
   reset-model
   load-data
   initialize-neighborhoods
+  initialize-neighborhoods-data
   reset-ticks
   create-citizens 1 [set shape "person" set size 8]
 end
