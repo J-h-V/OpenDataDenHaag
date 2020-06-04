@@ -2,10 +2,10 @@ to load-data
   ; Import all datasets
   set nhc []
   set shape-data gis:load-dataset "data/buurten.shp"
-  set housing-data csv:from-file "data/housing_data.csv" ;placeholder
+  set housing-data csv:from-file "data/housing_data.csv"
   foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
-  ;set citizen-data csv:from-file "data/myfile.csv" ;placeholder
-  ;set amenities-data csv:from-file "data/myfile.csv" ;placeholder
+  set citizen-data csv:from-file "data/citizen_data.csv"
+  ;set amenities-data csv:from-file "data/myfile.csv" !placeholder
 end
 
 to import-data
@@ -63,10 +63,24 @@ end
 
 to initialize-neighborhoods-data
   ask neighborhoods[
-    set houses retrieve-data buurtcode "houses" housing-data
-    set avg_price retrieve-data buurtcode "avg_price" housing-data
-    set p_free retrieve-data buurtcode "p_free" housing-data
-    set owned_properties retrieve-data buurtcode "bought_houses" housing-data
-    set rented_properties retrieve-data buurtcode "rented_houses" housing-data
+    ;housing-data
+    set houses retrieve-data buurtnumber "houses" housing-data
+    set avg_price retrieve-data buurtnumber "avg_price" housing-data
+    set p_free retrieve-data buurtnumber "p_free" housing-data
+    set owned_properties retrieve-data buurtnumber "bought_houses" housing-data
+    set rented_properties retrieve-data buurtnumber "rented_houses" housing-data
+    ;citizen-data
+    set men retrieve-data buurtnumber "men" citizen-data
+    set women retrieve-data buurtnumber "women" citizen-data
+    set a_young retrieve-data buurtnumber "a_young" citizen-data
+    set a_middle retrieve-data buurtnumber "a_middle" citizen-data
+    set a_old retrieve-data buurtnumber "a_old" citizen-data
+    set c_western retrieve-data buurtnumber "c_western" citizen-data
+    set c_antilles retrieve-data buurtnumber "c_antilles" citizen-data
+    set c_morocco retrieve-data buurtnumber "c_morocco" citizen-data
+    set c_suriname retrieve-data buurtnumber "c_suriname" citizen-data
+    set c_turkey retrieve-data buurtnumber "c_turkey" citizen-data
+    set c_nonwestern retrieve-data buurtnumber "c_nonwestern" citizen-data
+    ;amenities-data
   ]
 end
