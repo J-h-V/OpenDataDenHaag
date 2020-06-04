@@ -5,7 +5,7 @@ to load-data
   set housing-data csv:from-file "data/housing_data.csv"
   foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
   set citizen-data csv:from-file "data/citizen_data.csv"
-  ;set amenities-data csv:from-file "data/myfile.csv" !placeholder
+  set amenities-data csv:from-file "data/amenities_data.csv"
 end
 
 to import-data
@@ -82,5 +82,10 @@ to initialize-neighborhoods-data
     set c_turkey retrieve-data buurtnumber "c_turkey" citizen-data
     set c_nonwestern retrieve-data buurtnumber "c_nonwestern" citizen-data
     ;amenities-data
+    set b_horeca retrieve-data buurtnumber "b_horeca" amenities-data
+    set b_culture retrieve-data buurtnumber "b_culture" amenities-data
+    set d_gp retrieve-data buurtnumber "d_gp" amenities-data
+    set d_super retrieve-data buurtnumber "d_super" amenities-data
+    set d_daycare retrieve-data buurtnumber "d_nursery" amenities-data
   ]
 end

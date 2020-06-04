@@ -4,7 +4,7 @@ globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses avg_price p_free owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern]
+neighborhoods-own [ buurtnumber population houses avg_price p_free owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare]
 
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
 ;Like, for real, what are you even looking for here?
