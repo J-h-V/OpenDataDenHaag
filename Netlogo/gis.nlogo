@@ -5,17 +5,15 @@ breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
 neighborhoods-own [ buurtnumber population houses avg_price p_free owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare]
-
+citizens-own [ budget ethnicity social-class age lifephase satisfaction ]
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
 ;Like, for real, what are you even looking for here?
-
-
 
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-1601
+1256
 711
 -1
 -1
@@ -29,8 +27,8 @@ GRAPHICS-WINDOW
 0
 0
 1
--512
-512
+-384
+384
 -256
 256
 0

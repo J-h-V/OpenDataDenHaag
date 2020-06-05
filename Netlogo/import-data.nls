@@ -1,7 +1,7 @@
 to load-data  
   ; Import all datasets
   set nhc []
-  set shape-data gis:load-dataset "data/buurten.shp"
+  set shape-data gis:load-dataset "data/buurten_28992.shp"
   set housing-data csv:from-file "data/housing_data.csv"
   foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
   set citizen-data csv:from-file "data/citizen_data.csv"
@@ -29,7 +29,7 @@ to import-GIS-map
   if count turtles < 1 [error "Did you press the setup first?"]
   ; Note that setting the coordinate system here is optional, as
   ; long as all of your datasets use the same coordinate system.
-  gis:load-coordinate-system "data/buurten.prj"
+  gis:load-coordinate-system "data/buurten_28992.prj"
   gis:set-drawing-color white
   gis:draw shape-data 2
   gis:apply-coverage shape-data "BUURTCODE" buurtcode
