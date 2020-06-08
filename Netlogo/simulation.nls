@@ -1,13 +1,13 @@
-to setup
+to setup ;run by observer -> called from dashboard
   reset-model
   load-data
   initialize-neighborhoods
-  reset-ticks
   initialize-neighborhoods-data
-  create-citizens 1 [set shape "person" set size 8]
+  create-citizens 1 [set shape "person" set size 8] ;for test purpouses, will be removed later.
+  reset-ticks
 end
 
-to reset-model
+to reset-model ;run by observer -> to setup
   ;instead of using clear-all, this method prevents the deletion of the GIS map, which is process intensive to load back in. 
   clear-turtles
   clear-globals
@@ -16,7 +16,7 @@ to reset-model
   clear-output 
 end
 
-to go
+to go ;run by observer -> called from dashboard
   ask citizens[
     move-to one-of neighborhoods]
 end

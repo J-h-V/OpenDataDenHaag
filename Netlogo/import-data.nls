@@ -1,5 +1,4 @@
-to load-data  
-  ; Import all datasets
+to load-data ;run by observer -> to setup
   set nhc []
   set shape-data gis:load-dataset "data/buurten_32632.shp"
   set housing-data csv:from-file "data/housing_data.csv"
@@ -8,13 +7,7 @@ to load-data
   set amenities-data csv:from-file "data/amenities_data.csv"
 end
 
-to import-data
-  ask neighborhoods[
-    print retrieve-data buurtcode "buurtname" housing-data
-  ]
-end
-
-to-report retrieve-data [bc variable dataset]
+to-report retrieve-data [bc variable dataset] ;run by neighborhoods
   if population > 0 [
     if not is-number? position bc nhc [error sentence bc "is no valid bc!"]
     report item (position variable item 0 dataset) item ((position bc nhc) + 1) dataset]
@@ -24,9 +17,8 @@ to-report retrieve-data [bc variable dataset]
     report 0]
 end
 
-; Drawing point data from a shapefile
-to import-GIS-map
-  if count turtles < 1 [error "Did you press the setup first?"]
+to import-GIS-map ;run by observer
+  set shape-data gis:load-dataset "data/buurten_32632.shp"
   ; Note that setting the coordinate system here is optional, as
   ; long as all of your datasets use the same coordinate system.
   gis:load-coordinate-system "data/buurten_32632.prj"
@@ -40,8 +32,7 @@ to import-GIS-map
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of shape-data))
 end
 
-
-to initialize-neighborhoods
+to initialize-neighborhoods ;run by observer -> to setup
   foreach gis:feature-list-of shape-data [ vector-feature ->
     let centroid gis:location-of gis:centroid-of vector-feature
     ; centroid will be an empty list if it lies outside the bounds
@@ -61,7 +52,7 @@ to initialize-neighborhoods
   ]
 end  
 
-to initialize-neighborhoods-data
+to initialize-neighborhoods-data ;run by observer -> to setup
   ask neighborhoods[
     ;housing-data
     set houses retrieve-data buurtnumber "houses" housing-data
@@ -69,6 +60,7 @@ to initialize-neighborhoods-data
     set p_free retrieve-data buurtnumber "p_free" housing-data
     set owned_properties retrieve-data buurtnumber "bought_houses" housing-data
     set rented_properties retrieve-data buurtnumber "rented_houses" housing-data
+    set available-houses floor (houses * p_free / 100)
     ;citizen-data
     set men retrieve-data buurtnumber "men" citizen-data
     set women retrieve-data buurtnumber "women" citizen-data
