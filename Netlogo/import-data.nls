@@ -17,7 +17,7 @@ to-report retrieve-data [bc variable dataset] ;run by neighborhoods
     report 0]
 end
 
-to import-GIS-map ;run by observer
+to startup ;run by observer
   set shape-data gis:load-dataset "data/buurten_32632.shp"
   ; Note that setting the coordinate system here is optional, as
   ; long as all of your datasets use the same coordinate system.
@@ -60,7 +60,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set p_free retrieve-data buurtnumber "p_free" housing-data
     set owned_properties retrieve-data buurtnumber "bought_houses" housing-data
     set rented_properties retrieve-data buurtnumber "rented_houses" housing-data
-    set available-houses floor (houses * p_free / 100)
+    set available_houses floor (houses * p_free / 100) / aggregate-cluster-size
     ;citizen-data
     set men retrieve-data buurtnumber "men" citizen-data
     set women retrieve-data buurtnumber "women" citizen-data
@@ -80,4 +80,48 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set d_super retrieve-data buurtnumber "d_super" amenities-data
     set d_daycare retrieve-data buurtnumber "d_nursery" amenities-data
   ]
+end
+
+
+to import-citizens ;run by observer -> to setup
+  ask neighborhoods with [population > 0] [
+    let household-count floor houses / aggregate-cluster-size
+    ;lifephase locals
+    let pop_a a_young + a_middle + a_old
+    let p_young a_young / pop_a
+    let p_middle ( a_middle / pop_a ) + p_young
+    let p_old ( a_old / pop_a ) + p_middle
+    ;ethnicity locals
+    let pop_c ( c_western + c_antilles + c_morocco + c_suriname + c_turkey + c_nonwestern )
+    let p_western c_western / pop_c
+    let p_antilles ( c_antilles / pop_c ) + p_western
+    let p_morocco ( c_morocco / pop_c ) + p_antilles
+    let p_suriname ( c_suriname / pop_c ) + p_morocco
+    let p_turkey ( c_turkey / pop_c ) + p_suriname
+    let p_nonwestern ( c_nonwestern / pop_c ) + p_turkey    
+    ;education locals
+    
+    hatch-citizens household-count [
+      set shape "person"
+      set size 8
+      set current-neighborhood myself
+      set migrant? false
+      ;lifephase
+      let dice_lifephase random-float 1
+      set lifephase (ifelse-value
+        dice_lifephase <= p_young [ "young" ]
+        dice_lifephase <= p_middle [ "middle" ]
+        dice_lifephase <= p_old [ "old" ]
+               [ "error" ])
+      ;ethnicity
+      let dice_ethnicity random-float 1
+      set ethnicity (ifelse-value
+        dice_ethnicity <= p_western [ "western" ]
+        dice_ethnicity <= p_antilles [ "antilles" ]
+        dice_ethnicity <= p_morocco [ "morocco" ]
+        dice_ethnicity <= p_suriname [ "suriname" ]
+        dice_ethnicity <= p_turkey [ "turkey" ]
+        dice_ethnicity <= p_nonwestern [ "nonwestern" ]
+               [ "error" ])
+  ] ]
 end

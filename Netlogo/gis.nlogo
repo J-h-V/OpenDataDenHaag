@@ -4,8 +4,8 @@ globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses avg_price p_free available-houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare]
-citizens-own [ budget ethnicity social-class age lifephase satisfaction ]
+neighborhoods-own [ buurtnumber population houses avg_price p_free available_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare]
+citizens-own [ current-neighborhood budget ethnicity social-class lifephase satisfaction migrant?]
 
 
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
@@ -58,10 +58,10 @@ NIL
 BUTTON
 11
 53
-176
+186
 86
 draw the map!
-import-GIS-map
+startup
 NIL
 1
 T
@@ -75,9 +75,9 @@ NIL
 BUTTON
 10
 90
-100
+127
 123
-clear-all
+reset the model
 clear-all
 NIL
 1
@@ -92,7 +92,7 @@ NIL
 BUTTON
 105
 15
-175
+185
 48
 go
 go
@@ -105,6 +105,36 @@ G
 NIL
 NIL
 1
+
+SLIDER
+10
+130
+200
+163
+move-consideration-chance
+move-consideration-chance
+0
+0.1
+0.025
+0.001
+1
+NIL
+HORIZONTAL
+
+SLIDER
+10
+170
+200
+203
+aggregate-cluster-size
+aggregate-cluster-size
+1
+25
+25.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

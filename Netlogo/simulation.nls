@@ -3,12 +3,13 @@ to setup ;run by observer -> called from dashboard
   load-data
   initialize-neighborhoods
   initialize-neighborhoods-data
+  import-citizens
   create-citizens 1 [set shape "person" set size 8] ;for test purpouses, will be removed later.
   reset-ticks
 end
 
 to reset-model ;run by observer -> to setup
-  ;instead of using clear-all, this method prevents the deletion of the GIS map, which is process intensive to load back in. 
+               ;instead of using clear-all, this method prevents the deletion of the GIS map, which is process intensive to load back in. 
   clear-turtles
   clear-globals
   clear-ticks
@@ -17,6 +18,29 @@ to reset-model ;run by observer -> to setup
 end
 
 to go ;run by observer -> called from dashboard
+  consider-moving
+  ;other stuff
+  tick
+end
+
+to consider-moving ;run by observer -> to go
   ask citizens[
-    move-to one-of neighborhoods]
+    ifelse lifephase = "young" [
+      if random-float 1 < 2 * move-consideration-chance [ move-houses ]
+      ][ifelse lifephase = "old" [
+        if random-float 1 < 0.5 * move-consideration-chance [ move-houses ]
+      ]
+      [
+        if random-float 1 < move-consideration-chance [ move-houses ]
+      ]
+    ]
+  ]
+end
+
+to move-houses ;run by citizen -> to consider-moving
+  ;here is where the citizen will calculate whether and where to move to.
+  let affordable-neighborhoods neighborhoods with [avg_price <= [budget] of myself]
+  ;temporary movement to check for speed of the model
+  move-to one-of neighborhoods
+  set current-neighborhood one-of neighborhoods in-radius 1
 end
