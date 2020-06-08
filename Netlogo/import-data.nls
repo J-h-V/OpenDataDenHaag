@@ -4,13 +4,16 @@ to load-data ;run by observer -> to setup
   set housing-data csv:from-file "data/housing_data.csv"
   foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
   set citizen-data csv:from-file "data/citizen_data.csv"
+  set income-data csv:from-file "data/income_data.csv"
+  set education-data csv:from-file "data/education_data.csv"
   set amenities-data csv:from-file "data/amenities_data.csv"
 end
 
 to-report retrieve-data [bc variable dataset] ;run by neighborhoods
   if population > 0 [
     if not is-number? position bc nhc [error sentence bc "is no valid bc!"]
-    report item (position variable item 0 dataset) item ((position bc nhc) + 1) dataset]
+    report item (position variable item 0 dataset) item ((position bc nhc) + 1) dataset
+  ]
   ;Be aware, in the case that the neighborhood has no residents, it is not included in most datasets.
   ;Therefore, running this procedure for a neighborhood without residents will always return 0.
   if population < 1 [
@@ -79,6 +82,14 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set d_gp retrieve-data buurtnumber "d_gp" amenities-data
     set d_super retrieve-data buurtnumber "d_super" amenities-data
     set d_daycare retrieve-data buurtnumber "d_nursery" amenities-data
+    ;education-data
+    set e_low retrieve-data buurtnumber "e_low" education-data
+    set e_middle retrieve-data buurtnumber "e_middle" education-data
+    set e_high retrieve-data buurtnumber "e_high" education-data
+    ;income-data
+    set avg_income retrieve-data buurtnumber "income" income-data
+    if avg_price < 1 [ set avg_price avg_income * 9.35 / 1000 ]
+    if avg_income < 1 [ set avg_income avg_price / 9.35 * 1000 ]
   ]
 end
 
@@ -87,7 +98,7 @@ to import-citizens ;run by observer -> to setup
   ask neighborhoods with [population > 0] [
     let household-count floor houses / aggregate-cluster-size
     ;lifephase locals
-    let pop_a a_young + a_middle + a_old
+    let pop_a ( a_young + a_middle + a_old )
     let p_young a_young / pop_a
     let p_middle ( a_middle / pop_a ) + p_young
     let p_old ( a_old / pop_a ) + p_middle
@@ -100,8 +111,13 @@ to import-citizens ;run by observer -> to setup
     let p_turkey ( c_turkey / pop_c ) + p_suriname
     let p_nonwestern ( c_nonwestern / pop_c ) + p_turkey    
     ;education locals
-    
+    let pop_e ( e_low + e_middle + e_high )
+    let p_e_low e_low / pop_e
+    let p_e_middle ( e_middle / pop_e ) + p_e_low
+    let p_e_high ( e_high / pop_e ) + p_e_middle 
+    ;creating the actual citizens within the neighborhood
     hatch-citizens household-count [
+      set label ""
       set shape "person"
       set size 8
       set current-neighborhood myself
@@ -112,7 +128,7 @@ to import-citizens ;run by observer -> to setup
         dice_lifephase <= p_young [ "young" ]
         dice_lifephase <= p_middle [ "middle" ]
         dice_lifephase <= p_old [ "old" ]
-               [ "error" ])
+        [ "error" ])
       ;ethnicity
       let dice_ethnicity random-float 1
       set ethnicity (ifelse-value
@@ -122,6 +138,15 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_suriname [ "suriname" ]
         dice_ethnicity <= p_turkey [ "turkey" ]
         dice_ethnicity <= p_nonwestern [ "nonwestern" ]
-               [ "error" ])
+        [ "error" ])
+      ;education
+      let dice_education random-float 1
+      set education (ifelse-value
+        dice_education <= p_e_low [ "low" ]
+        dice_education <= p_e_middle [ "middle" ]
+        dice_education <= p_e_high [ "high" ]
+        [ "error" ])
+      ;income/budget
+      set budget round random-normal [avg_income] of myself 2
   ] ]
 end

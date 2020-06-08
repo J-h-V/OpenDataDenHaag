@@ -1,11 +1,11 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data ]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses avg_price p_free available_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare]
-citizens-own [ current-neighborhood budget ethnicity social-class lifephase satisfaction migrant?]
+neighborhoods-own [ buurtnumber population houses avg_price p_free available_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare e_low e_middle e_high avg_income]
+citizens-own [ current-neighborhood budget education ethnicity social-class lifephase satisfaction migrant?]
 
 
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
@@ -130,11 +130,29 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 25
-25.0
+1.0
 1
 1
 NIL
 HORIZONTAL
+
+PLOT
+1265
+110
+1860
+600
+plot 1
+avg_income
+avg_price
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 2 -16777216 true "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]" "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]"
 
 @#$#@#$#@
 ## WHAT IS IT?
