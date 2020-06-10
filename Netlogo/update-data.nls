@@ -1,1 +1,18 @@
 ;Here I will add all procedures that change over time.
+to calculate-social-class ;run by citizen -> to import-citizens and to introduce-new-migrants
+                          ;To consider: currently only calculate social class when a citizen is created, should this be something that is recalcuted over time?
+  
+  ifelse income = "low" [
+    ifelse education = "low" [ set social-class "lower" ][ set social-class "working" ]
+  ]
+  [ ifelse income = "high" [
+    ifelse education = "high" [ set social-class "upper" ][ ifelse lifephase = "young" [ set social-class "working" ] [ set social-class "middle" ] ]
+    ]
+    [ ifelse education = "low" [ set social-class "working" ][ ifelse lifephase = "young" [ set social-class "working" ] [ set social-class "middle" ] ] ]
+  ]
+  ;above if-loop is quite hard to read, for further clarification see decision tree in report.
+end
+
+to introduce-new-migrants
+  ;This procedure will create new migrants which enter the model every timestep.
+end

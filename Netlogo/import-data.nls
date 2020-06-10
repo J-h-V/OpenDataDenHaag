@@ -152,5 +152,13 @@ to import-citizens ;run by observer -> to setup
         [ "error" ])
       ;income/budget
       set budget round random-normal [avg_income] of myself 2
+      set income (ifelse-value
+        budget <= 25000 [ "low" ]
+        budget <= 40000 [ "middle" ]
+        budget <= 100000 [ "high" ]
+        [ "error" ])
   ] ]
+  ask citizens [
+    calculate-social-class
+  ]
 end
