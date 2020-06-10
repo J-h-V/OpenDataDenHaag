@@ -46,7 +46,7 @@ to initialize-neighborhoods ;run by observer -> to setup
       [ set xcor item 0 centroid
         set ycor item 1 centroid
         set buurtnumber gis:property-value vector-feature "BUURTCODE"
-        ifelse gis:property-value vector-feature "c_total" = 0 [set size 8] [set size exp ( 1 / 7000 * gis:property-value vector-feature "c_total" ) + 7 ]
+        set size 8
         set population gis:property-value vector-feature "c_total"
         set shape "house"
         set label gis:property-value vector-feature "BUURTNAAM"
@@ -59,6 +59,9 @@ to initialize-neighborhoods-data ;run by observer -> to setup
   ask neighborhoods[
     ;housing-data
     set houses retrieve-data buurtnumber "houses" housing-data
+    show houses
+    ifelse houses = 0 [set size 8] [set size exp ( 1 / 3000 * houses ) + 7 ]
+    set avg_household_size retrieve-data buurtnumber "avg_household_size" housing-data
     set avg_price retrieve-data buurtnumber "avg_price" housing-data
     set p_free retrieve-data buurtnumber "p_free" housing-data
     set owned_properties retrieve-data buurtnumber "bought_houses" housing-data
@@ -88,6 +91,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set e_high retrieve-data buurtnumber "e_high" education-data
     ;income-data
     set avg_income retrieve-data buurtnumber "income" income-data
+    ;Fill missing data points using linear regression coefficient (b=9.35)
     if avg_price < 1 [ set avg_price avg_income * 9.35 / 1000 ]
     if avg_income < 1 [ set avg_income avg_price / 9.35 * 1000 ]
   ]
