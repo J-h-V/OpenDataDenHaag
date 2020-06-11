@@ -138,9 +138,9 @@ HORIZONTAL
 
 PLOT
 1265
-110
-1860
-600
+10
+1685
+295
 plot 1
 avg_income
 avg_price

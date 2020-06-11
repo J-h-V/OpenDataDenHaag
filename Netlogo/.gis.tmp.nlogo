@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data ]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
@@ -138,9 +138,9 @@ HORIZONTAL
 
 PLOT
 1265
-110
-1860
-600
+10
+1685
+295
 plot 1
 avg_income
 avg_price
@@ -153,6 +153,24 @@ false
 "" ""
 PENS
 "default" 1.0 2 -16777216 true "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]" "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]"
+
+PLOT
+1355
+355
+1555
+505
+plot 2
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 2 -16777216 true "" "ask citizens [ plotxy buurtcode age ]"
 
 @#$#@#$#@
 ## WHAT IS IT?

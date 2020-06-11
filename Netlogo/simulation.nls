@@ -34,8 +34,8 @@ to move-houses ;run by citizen -> to consider-moving
                ;here is where the citizen will calculate whether and where to move to. This procedure is very limited in its current form.
   let affordable-neighborhoods neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
   let available-neighborhoods affordable-neighborhoods with [ available_houses > aggregate-cluster-size ]
+  if not is-agentset? available-neighborhoods  or not any? available-neighborhoods [ show "I couldn't find a home.." stop ]
   let chosen-neighborhood one-of available-neighborhoods
-  if not is-agentset? chosen-neighborhood [ error "no neighborhood?" ]
   ask current-neighborhood [set available_houses available_houses + 1]
   move-to chosen-neighborhood
   set current-neighborhood chosen-neighborhood
