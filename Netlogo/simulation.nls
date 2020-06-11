@@ -25,15 +25,8 @@ end
 
 to consider-moving ;run by observer -> to go
   ask citizens[
-    ifelse lifephase = "young" [
-      if random-float 1 < 2 * move-consideration-chance [ move-houses ]
-      ][ifelse lifephase = "old" [
-        if random-float 1 < 0.5 * move-consideration-chance [ move-houses ]
-      ]
-      [
-        if random-float 1 < move-consideration-chance [ move-houses ]
-      ]
-    ]
+    let move-chance item (position "percent" item 0 movementage-data) item ( age + 1 ) movementage-data
+    if random-float 1 < 10 * move-chance [ move-houses ]
   ]
 end
 
@@ -42,7 +35,8 @@ to move-houses ;run by citizen -> to consider-moving
   let affordable-neighborhoods neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
   let available-neighborhoods affordable-neighborhoods with [ available_houses > aggregate-cluster-size ]
   let chosen-neighborhood one-of available-neighborhoods
-  ask current-neighborhood [set available_houses available_houses + 1] 
+  if not is-agentset? chosen-neighborhood [ error "no neighborhood?" ]
+  ask current-neighborhood [set available_houses available_houses + 1]
   move-to chosen-neighborhood
   set current-neighborhood chosen-neighborhood
   ask current-neighborhood [set available_houses available_houses - 1] 

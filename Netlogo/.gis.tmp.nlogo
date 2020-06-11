@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 patches-own [ buurtcode buurtname ]
