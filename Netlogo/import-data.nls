@@ -66,7 +66,8 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set p_free retrieve-data buurtnumber "p_free" housing-data
     set owned_properties retrieve-data buurtnumber "bought_houses" housing-data
     set rented_properties retrieve-data buurtnumber "rented_houses" housing-data
-    set available_houses floor (houses * p_free / 100) / aggregate-cluster-size
+    set available_buy_houses floor ( (houses * owned_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_rent_houses floor ( (houses * rented_properties / 100 * p_free / 100) / aggregate-cluster-size )
     ;citizen-data
     set men retrieve-data buurtnumber "men" citizen-data
     set women retrieve-data buurtnumber "women" citizen-data
