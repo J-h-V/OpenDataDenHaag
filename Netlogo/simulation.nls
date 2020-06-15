@@ -13,33 +13,88 @@ to reset-model ;run by observer -> to setup
   clear-globals
   clear-ticks
   clear-all-plots
-  clear-output 
+  clear-output
+  set y 2020
+  set q 1 
 end
 
 to go ;run by observer -> called from dashboard
   introduce-new-migrants
   consider-moving
   ;other stuff
-  tick
+  time-tick
 end
+
+to time-tick
+  if q mod 4 = 0 [ set y y + 1 set q 0 ]
+  set q q + 1
+  tick
+end  
 
 to consider-moving ;run by observer -> to go
   ask citizens[
     let move-chance item (position "percent" item 0 movementage-data) item ( age + 1 ) movementage-data
-    if random-float 1 < 10 * move-chance [ move-houses ]
+    if random-float 1 < 2.5 * move-chance [ move-houses ]
   ]
 end
 
-to move-houses ;run by citizen -> to consider-moving
-               ;here is where the citizen will calculate whether and where to move to. This procedure is very limited in its current form.
-  let affordable-neighborhoods neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
+to-report select-rent-neighborhoods ;run by citizen -> to move-houses
   let available-neighborhoods nobody
-  ifelse social-class = "low" [  set available-neighborhoods affordable-neighborhoods with [ available_rent_houses > aggregate-cluster-size ] ]
-  [ ifelse social-class = "high" [ set available-neighborhoods affordable-neighborhoods with [ available_buy_houses > aggregate-cluster-size ] ][ set available-neighborhoods affordable-neighborhoods with [ available_rent_houses + available_buy_houses > aggregate-cluster-size ] ]]
-  if not is-agentset? available-neighborhoods  or not any? available-neighborhoods [ show "I couldn't find a home.." stop ]
-  let chosen-neighborhood one-of available-neighborhoods
-  ask current-neighborhood [set available_buy_houses available_buy_houses + 1] ;TODO FULL REWRITE!
-  move-to chosen-neighborhood
-  set current-neighborhood chosen-neighborhood
-  ask current-neighborhood [set available_buy_houses available_buy_houses - 1] 
+  report neighborhoods with [ available_rent_houses > 0 ]
+end
+
+to-report select-buy-neighborhoods ;run by citizen -> to move-houses
+  let available-neighborhoods nobody
+  report neighborhoods with [ available_buy_houses > 0 ]
+end
+
+to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  ask current-neighborhood [set available_buy_houses available_buy_houses + 1]
+  move-to nh
+  set current-neighborhood nh
+  ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
+  set move-counter move-counter + 1
+end
+
+to move-neighbhorhoods-rent [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  ask current-neighborhood [set available_rent_houses available_rent_houses + 1]
+  move-to nh
+  set current-neighborhood nh
+  ask current-neighborhood [set available_rent_houses available_rent_houses - 1]
+  set move-counter move-counter + 1
+end
+
+to move-houses ;run by citizen -> to consider-moving
+  let available-buy-neighborhoods select-buy-neighborhoods
+  let available-rent-neighborhoods select-rent-neighborhoods  
+  if not any? available-buy-neighborhoods and not any? available-rent-neighborhoods [ show "no availbility!" stop]
+  let affordable-buy-neighborhoods available-buy-neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
+  let affordable-rent-neighborhoods available-rent-neighborhoods with [avg_price * 750 <= [budget] of myself * 9.35] ;assume renting is more afforable
+  if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make..
+  if social-class = "upper" [ set affordable-rent-neighborhoods nobody ] ;..sure social class looks at right housing type.
+  
+  ifelse not any? affordable-buy-neighborhoods and not any? affordable-rent-neighborhoods [ show "I am too poor to move" stop]
+  [
+    if affordable-rent-neighborhoods != nobody [ ask affordable-rent-neighborhoods [ define-utility myself true ] ]
+    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself false ] ]
+    
+    let best-rent-option max-one-of rent-links [ utility ]
+    let best-buy-option max-one-of buy-links [ utility ]
+    
+    ;If either buy or rent options is non-existent, make sure to choose the other.
+    ifelse not is-agent? best-buy-option [ move-neighbhorhoods-rent other-side best-rent-option ]
+    [ ifelse not is-agent? best-rent-option [ move-neighbhorhoods-buy other-side best-buy-option ]
+      [
+        ;Based on buying or renting a new home, make the move.
+        ifelse [utility] of best-rent-option > [utility] of best-buy-option
+        [ move-neighbhorhoods-rent other-side best-rent-option ]
+        [ move-neighbhorhoods-buy other-side best-buy-option ]
+      ]
+    ]
+  ]
+  ;remove links between citizen and neighborhoods so the next citizen can start calculating.
+  ask rent-links [die]
+  ask buy-links [die]
 end

@@ -47,7 +47,7 @@ to initialize-neighborhoods ;run by observer -> to setup
       [ set xcor item 0 centroid
         set ycor item 1 centroid
         set buurtnumber gis:property-value vector-feature "BUURTCODE"
-        set size 8
+        set size 6
         set population gis:property-value vector-feature "c_total"
         set shape "house"
         set label gis:property-value vector-feature "BUURTNAAM"
@@ -60,7 +60,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
   ask neighborhoods[
     ;housing-data
     set houses retrieve-data buurtnumber "houses" housing-data
-    ifelse houses = 0 [set size 8] [set size exp ( 1 / 3000 * houses ) + 7 ]
+    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size exp ( 1 / 3000 * houses ) + 7 ]
     set avg_household_size retrieve-data buurtnumber "avg_household_size" housing-data
     set avg_price retrieve-data buurtnumber "avg_price" housing-data
     set p_free retrieve-data buurtnumber "p_free" housing-data
@@ -140,7 +140,6 @@ to import-citizens ;run by observer -> to setup
         lifephase = "middle" [ random 40 + 25 ]
         lifephase = "old" [ random 35 + 65 ]
         [ 999 ])
-      
       ;ethnicity
       let dice_ethnicity random-float 1
       set ethnicity (ifelse-value

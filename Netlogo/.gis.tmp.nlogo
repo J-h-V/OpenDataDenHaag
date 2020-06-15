@@ -1,8 +1,12 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data move-counter q y ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
+undirected-link-breed [ rent-links rent-link ]
+undirected-link-breed [ buy-links buy-link ]
+rent-links-own [ utility ]
+buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
 neighborhoods-own [ buurtnumber population houses avg_household_size avg_price p_free available_buy_houses available_rent_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare e_low e_middle e_high avg_income]
 citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase satisfaction migrant?]
@@ -153,6 +157,39 @@ false
 "" ""
 PENS
 "default" 1.0 2 -16777216 true "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]" "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]"
+
+MONITOR
+1265
+305
+1352
+350
+NIL
+move-counter
+17
+1
+11
+
+MONITOR
+1190
+20
+1247
+65
+year
+y
+17
+1
+11
+
+MONITOR
+1130
+20
+1187
+65
+quarter
+q
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
