@@ -8,6 +8,7 @@ to load-data ;run by observer -> to setup
   set education-data csv:from-file "data/education_data.csv"
   set amenities-data csv:from-file "data/amenities_data.csv"
   set movementage-data csv:from-file "data/movementage.csv"
+  set ov-data csv:from-file "data/ovstations.csv"
 end
 
 to-report retrieve-data [bc variable dataset] ;run by neighborhoods
@@ -86,6 +87,8 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set d_gp retrieve-data buurtnumber "d_gp" amenities-data
     set d_super retrieve-data buurtnumber "d_super" amenities-data
     set d_daycare retrieve-data buurtnumber "d_nursery" amenities-data
+    ;OV station-data
+    set ovstations retrieve-data buurtnumber "total_m" ov-data
     ;education-data
     set e_low retrieve-data buurtnumber "e_low" education-data
     set e_middle retrieve-data buurtnumber "e_middle" education-data

@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data move-counter q y ]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data ov-data move-counter q y ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ rent-links rent-link ]
@@ -8,7 +8,7 @@ undirected-link-breed [ buy-links buy-link ]
 rent-links-own [ utility ]
 buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses avg_household_size avg_price p_free available_buy_houses available_rent_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare e_low e_middle e_high avg_income]
+neighborhoods-own [ buurtnumber population houses ovstations avg_household_size avg_price p_free available_buy_houses available_rent_houses owned_properties rented_properties men women a_young a_middle a_old c_western c_antilles c_morocco c_suriname c_turkey c_nonwestern b_horeca b_culture d_gp d_super d_daycare e_low e_middle e_high avg_income]
 citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase satisfaction migrant?]
 
 
@@ -79,7 +79,7 @@ NIL
 BUTTON
 10
 90
-127
+120
 123
 reset the model
 clear-all
@@ -191,7 +191,30 @@ q
 1
 11
 
+BUTTON
+125
+90
+188
+123
+Help
+error \"Welcome to the Agent-Based Model on the effects of migration on the city of The Hague. If you are new to Netlogo (or this model), please refer to the Info tab for a detailed description, or press CTRL + 2 to get there!\"
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
 @#$#@#$#@
+# The Impact of Migration on the Urban Fabric
+## A Data-Driven Agent-Based Model on the effects of migration on the city of The Hague
+
+
+This document is a work in progress, as I am still in the process of building the model I will very infrequently update the manual. Afterwards, this tab will give an explanation of the model and its inner workings in such a way that it is not necessary to understand the Netlogo code to be able to comprehend what is happening.
+
 ## WHAT IS IT?
 
 (a general understanding of what the model is trying to show or explain)
@@ -226,7 +249,10 @@ q
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+This model is made by J.H.Vlug as part of his Master's Thesis for the MSc Engineering and Policy Analysis of The University of Technology in Delft. The model is made using the MIT Licence. Everything is Open Source and available on GitHub (see link below). If you would like to use this model for your own research or work, please contact me (for example on Twitter) for more information.
+
+GitHub: https://github.com/Jochem285/OpenDataDenHaag
+Twitter: https://twitter.com/JochemVlug
 @#$#@#$#@
 default
 true

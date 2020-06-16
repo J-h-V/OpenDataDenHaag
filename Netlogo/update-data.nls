@@ -1,4 +1,5 @@
 ;Here I will add all procedures that change over time.
+
 to calculate-social-class ;run by citizen -> to import-citizens and to introduce-new-migrants
                           ;To consider: currently only calculate social class when a citizen is created, should this be something that is recalcuted over time?
   
@@ -64,9 +65,10 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
       [ethnicity] of c = "suriname" [ [c_suriname] of nh ]
       [ethnicity] of c = "turkey" [ [c_turkey] of nh ]
       [ethnicity] of c = "nonwestern" [ [c_nonwestern] of nh ]
-      [ "error" ])    
+      [ "error" ])
+    let public-transport-score [ovstations] of nh
     ;include ethnicity prevalence, public transport
-    report ethnicity-score ;* public-transport-score
+    report ethnicity-score * public-transport-score
   ]
   
   if [social-class] of c = "middle"
@@ -103,4 +105,16 @@ to-report other-side [l] ;run by citizen -> to move-houses
   ask l [set nh other-end]
   if not is-agent? nh [ error "There is no turtle at the end of this link." ]
   report nh
+end
+
+to update-neighborhoods
+  ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
+  ;Most stuff here are exogenous changes that are modeled as external pushes.
+  
+  ;TODO change in amenities
+  
+  ;TODO citizen change from life/death
+  
+  ;TODO safety changes?
+  
 end
