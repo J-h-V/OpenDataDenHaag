@@ -224,6 +224,47 @@ count citizens
 1
 11
 
+PLOT
+5
+360
+205
+510
+distribution of social-class
+NIL
+NIL
+1.0
+5.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 1 -5298144 true "" "plotxy 1 count citizens with [social-class = \"lower\"]"
+"pen-1" 1.0 1 -4079321 true "" "plotxy 2 count citizens with [social-class = \"working\"]"
+"pen-2" 1.0 1 -14439633 true "" "plotxy 3 count citizens with [social-class = \"middle\"]"
+"pen-3" 1.0 1 -14070903 true "" "plotxy 4 count citizens with [social-class = \"upper\"]"
+
+PLOT
+5
+520
+205
+670
+distribution of income
+NIL
+NIL
+1.0
+4.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 1 -5298144 true "" "plotxy 1 count citizens with [income = \"low\"]"
+"pen-1" 1.0 1 -4079321 true "" "plotxy 2 count citizens with [income = \"middle\"]"
+"pen-2" 1.0 1 -14439633 true "" "plotxy 3 count citizens with [income = \"high\"]"
+
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
 ## A Data-Driven Agent-Based Model on the effects of migration on the city of The Hague
