@@ -99,6 +99,8 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     if avg_price < 1 [ set avg_price avg_income * 9.35 / 1000 ]
     if avg_income < 1 [ set avg_income avg_price / 9.35 * 1000 ]
   ]
+  set available-neighborhoods-rent neighborhoods with [ available_rent_houses > 0 ]
+  set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
 end
 
 
@@ -153,6 +155,13 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_turkey [ "turkey" ]
         dice_ethnicity <= p_nonwestern [ "nonwestern" ]
         [ "error" ])
+      ;income/budget
+      set budget round random-normal [avg_income] of myself 0.5
+      set income (ifelse-value
+        budget <= 25000 [ "low" ]
+        budget <= 40000 [ "middle" ]
+        budget <= 100000 [ "high" ]
+        [ "error" ])
       ;education
       let dice_education random-float 1
       set education (ifelse-value
@@ -160,13 +169,8 @@ to import-citizens ;run by observer -> to setup
         dice_education <= p_e_middle [ "middle" ]
         dice_education <= p_e_high [ "high" ]
         [ "error" ])
-      ;income/budget
-      set budget round random-normal [avg_income] of myself 2
-      set income (ifelse-value
-        budget <= 25000 [ "low" ]
-        budget <= 40000 [ "middle" ]
-        budget <= 100000 [ "high" ]
-        [ "error" ])
+      if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+      if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
   ] ]
   ask citizens [
     calculate-social-class

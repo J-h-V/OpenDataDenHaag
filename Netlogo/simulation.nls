@@ -38,22 +38,13 @@ to consider-moving ;run by observer -> to go
   ]
 end
 
-to-report select-rent-neighborhoods ;run by citizen -> to move-houses
-  let available-neighborhoods nobody
-  report neighborhoods with [ available_rent_houses > 0 ]
-end
-
-to-report select-buy-neighborhoods ;run by citizen -> to move-houses
-  let available-neighborhoods nobody
-  report neighborhoods with [ available_buy_houses > 0 ]
-end
-
 to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
   ask current-neighborhood [set available_buy_houses available_buy_houses + 1]
   move-to nh
   set current-neighborhood nh
   ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
+  if [available_buy_houses] of current-neighborhood < 1 [ set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
 end
 
@@ -63,12 +54,13 @@ to move-neighbhorhoods-rent [nh] ;run by citizen -> to move-houses
   move-to nh
   set current-neighborhood nh
   ask current-neighborhood [set available_rent_houses available_rent_houses - 1]
+  if [available_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-rent neighborhoods with [ available_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
 end
 
 to move-houses ;run by citizen -> to consider-moving
-  let available-buy-neighborhoods select-buy-neighborhoods
-  let available-rent-neighborhoods select-rent-neighborhoods  
+  let available-buy-neighborhoods available-neighborhoods-buy
+  let available-rent-neighborhoods available-neighborhoods-rent
   if not any? available-buy-neighborhoods and not any? available-rent-neighborhoods [ show "no availbility!" stop]
   let affordable-buy-neighborhoods available-buy-neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
   let affordable-rent-neighborhoods available-rent-neighborhoods with [avg_price * 750 <= [budget] of myself * 9.35] ;assume renting is more afforable

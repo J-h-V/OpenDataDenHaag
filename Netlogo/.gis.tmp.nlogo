@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data ov-data move-counter q y ]
+globals [ neighborhood-codes nhc shape-data housing-data citizen-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-rent available-neighborhoods-buy ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ rent-links rent-link ]
@@ -113,28 +113,13 @@ NIL
 SLIDER
 10
 130
-200
+190
 163
-move-consideration-chance
-move-consideration-chance
-0
-0.1
-0.025
-0.001
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-170
-200
-203
 aggregate-cluster-size
 aggregate-cluster-size
 1
-25
-25.0
+100
+100.0
 1
 1
 NIL
@@ -143,26 +128,29 @@ HORIZONTAL
 PLOT
 1265
 10
-1685
-295
-plot 1
-avg_income
-avg_price
+2260
+710
+social-class per neighborhood
+buurtcode
+percentage-social-class
 0.0
-10.0
+114.0
 0.0
-10.0
-true
+1.0
 false
-"" ""
+true
+"" "clear-plot"
 PENS
-"default" 1.0 2 -16777216 true "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]" "ask neighborhoods with [population > 1] [plotxy buurtcode available_houses]"
+"upper" 0.25 1 -14070903 true "" "let nh neighborhoods with [count citizens with [current-neighborhood = myself] > 0 ]\nask nh [ plotxy [who] of self + 0.75 ( count citizens with [current-neighborhood = myself and social-class = \"upper\"] / count citizens with [current-neighborhood = myself] ) ]"
+"middle" 0.25 1 -14439633 true "" "let nh neighborhoods with [count citizens with [current-neighborhood = myself] > 0 ]\nask nh [ plotxy [who] of self + 0.5 ( count citizens with [current-neighborhood = myself and social-class = \"middle\"] / count citizens with [current-neighborhood = myself] )  ]"
+"working" 0.25 1 -4079321 true "" "let nh neighborhoods with [count citizens with [current-neighborhood = myself] > 0 ]\nask nh [ plotxy [who] of self + 0.25  ( count citizens with [current-neighborhood = myself and social-class = \"working\"] / count citizens with [current-neighborhood = myself] )  ]"
+"lower" 0.25 1 -5298144 true "" "let nh neighborhoods with [count citizens with [current-neighborhood = myself] > 0 ]\nask nh[ plotxy [who] of self  ( count citizens with [current-neighborhood = myself and social-class = \"lower\"] / count citizens with [current-neighborhood = myself] )  ]"
 
 MONITOR
-1265
-305
-1352
-350
+1040
+20
+1127
+65
 NIL
 move-counter
 17
@@ -207,6 +195,34 @@ NIL
 NIL
 NIL
 1
+
+BUTTON
+70
+240
+147
+273
+go-once
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+220
+20
+322
+65
+total households
+count citizens
+17
+1
+11
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
