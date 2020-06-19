@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-data neighborhood-codes nhc crime-data shape-data housing-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy ]
+globals [ neighborhood-data neighborhood-codes nhc crime-data daycare-data shape-data housing-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy ]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ social-rent-links social-rent-link ]
@@ -10,7 +10,7 @@ social-rent-links-own [ utility ]
 part-rent-links-own [ utility ]
 buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern b_horeca b_amenities a_health a_schools d_super d_daycare e_low e_middle e_high avg_income]
+neighborhoods-own [ buurtnumber population houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern b_horeca b_amenities a_health a_schools d_super daycare_per_citizen e_low e_middle e_high avg_income]
 citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase migrant?]
 
 
