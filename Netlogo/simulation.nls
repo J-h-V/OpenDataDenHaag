@@ -48,45 +48,52 @@ to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   set move-counter move-counter + 1
 end
 
-to move-neighbhorhoods-rent [nh] ;run by citizen -> to move-houses
+to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  ask current-neighborhood [set available_rent_houses available_rent_houses + 1]
+  ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]
   move-to nh
   set current-neighborhood nh
-  ask current-neighborhood [set available_rent_houses available_rent_houses - 1]
-  if [available_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-rent neighborhoods with [ available_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  ask current-neighborhood [set available_social_rent_houses available_social_rent_houses - 1]
+  if [available_social_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  set move-counter move-counter + 1
+end
+
+to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]
+  move-to nh
+  set current-neighborhood nh
+  ask current-neighborhood [set available_part_rent_houses available_part_rent_houses - 1]
+  if [available_part_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
 end
 
 to move-houses ;run by citizen -> to consider-moving
-  let available-buy-neighborhoods available-neighborhoods-buy
-  let available-rent-neighborhoods available-neighborhoods-rent
-  if not any? available-buy-neighborhoods and not any? available-rent-neighborhoods [ show "no availbility!" stop]
-  let affordable-buy-neighborhoods available-buy-neighborhoods with [avg_price * 1000 <= [budget] of myself * 9.35]
-  let affordable-rent-neighborhoods available-rent-neighborhoods with [avg_price * 750 <= [budget] of myself * 9.35] ;assume renting is more afforable
-  if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make..
-  if social-class = "upper" [ set affordable-rent-neighborhoods nobody ] ;..sure social class looks at right housing type.
+  if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "no availbility!" stop]
+  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= [budget] of myself * 9.35]
+  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= [budget] of myself * 9.35] ;assume renting is more afforable
+  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= [budget] of myself * 9.35] ;assume social renting is even more afforable
+  if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make sure social class looks at right housing type.
+  if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ]
   
-  ifelse not any? affordable-buy-neighborhoods and not any? affordable-rent-neighborhoods [ show "I am too poor to move" stop]
+  ifelse affordable-buy-neighborhoods = nobody and affordable-social-rent-neighborhoods = nobody and affordable-part-rent-neighborhoods = nobody [ show "I am too poor to move" stop]
   [
-    if affordable-rent-neighborhoods != nobody [ ask affordable-rent-neighborhoods [ define-utility myself true ] ]
-    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself false ] ]
+    if affordable-part-rent-neighborhoods != nobody [ ask affordable-part-rent-neighborhoods [ define-utility myself "part-rent" ] ]
+    if affordable-social-rent-neighborhoods != nobody [ ask affordable-social-rent-neighborhoods [ define-utility myself "social-rent" ] ]
+    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself "buy" ] ]
     
-    let best-rent-option max-one-of rent-links [ utility ]
+    let best-social-rent-option max-one-of social-rent-links [ utility ]
+    let best-part-rent-option max-one-of part-rent-links [ utility ]
     let best-buy-option max-one-of buy-links [ utility ]
     
-    ;If either buy or rent options is non-existent, make sure to choose the other.
-    ifelse not is-agent? best-buy-option [ move-neighbhorhoods-rent other-side best-rent-option ]
-    [ ifelse not is-agent? best-rent-option [ move-neighbhorhoods-buy other-side best-buy-option ]
-      [
-        ;Based on buying or renting a new home, make the move.
-        ifelse [utility] of best-rent-option > [utility] of best-buy-option
-        [ move-neighbhorhoods-rent other-side best-rent-option ]
-        [ move-neighbhorhoods-buy other-side best-buy-option ]
-      ]
-    ]
+    let winner max-one-of ( link-set best-social-rent-option best-part-rent-option best-buy-option ) [utility]
+    if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
+    if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]
+    if is-social-rent-link? winner [ move-neighbhorhoods-social-rent other-side best-social-rent-option ]
+    if winner = nobody [ error "I didn't find a best location!" ] 
   ]
-  ;remove links between citizen and neighborhoods so the next citizen can start calculating.
-  ask rent-links [die]
+  ;Remove links between citizen and neighborhoods so the next citizen can start calculating.
+  ask social-rent-links [die]
+  ask part-rent-links [die]
   ask buy-links [die]
 end
