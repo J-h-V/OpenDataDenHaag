@@ -18,17 +18,29 @@ to introduce-new-migrants
   ;This procedure will create new migrants which enter the model every timestep.
 end
 
-to define-utility [c rent?] ;run by neighborhoods -> to move-houses
-  ifelse rent?
-  ;here comes the rent function
-  [create-rent-link-with c [
+to define-utility [c ownership] ;run by neighborhoods -> to move-houses
+  if ownership = "social-rent"
+  ;here comes the part rent function
+  [create-social-rent-link-with c [
     set color green  
-    set utility calculate-utility]
+    set utility calculate-utility
+    ]
   ]
-  ;here comes the buy funciton
-  [create-rent-link-with c [
+  
+  if ownership = "part-rent"
+  ;here comes the part rent function
+  [create-part-rent-link-with c [
+    set color yellow  
+    set utility calculate-utility
+    ]
+  ]
+  
+  if ownership = "buy"
+  ;here comes the buy function
+  [create-buy-link-with c [
     set color red    
-    set utility calculate-utility]
+    set utility calculate-utility
+    ]
   ]
 end
 
@@ -43,14 +55,7 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   
   if [social-class] of c = "lower"
   [
-    let ethnicity-score (ifelse-value
-      [ethnicity] of c = "western" [ [c_western] of nh ]
-      [ethnicity] of c = "antilles" [ [c_antilles] of nh ]
-      [ethnicity] of c = "morocco" [ [c_morocco] of nh ]
-      [ethnicity] of c = "suriname" [ [c_suriname] of nh ]
-      [ethnicity] of c = "turkey" [ [c_turkey] of nh ]
-      [ethnicity] of c = "nonwestern" [ [c_nonwestern] of nh ]
-      [ "error" ])    
+    let ethnicity-score count citizens with [current-neighborhood = nh and ethnicity = [ethnicity] of c] / count citizens with [ current-neighborhood = nh ]
     
     ;include ethnicity prevalence
     report ethnicity-score
@@ -58,14 +63,7 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   
   if [social-class] of c = "working"
   [
-    let ethnicity-score (ifelse-value
-      [ethnicity] of c = "western" [ [c_western] of nh ]
-      [ethnicity] of c = "antilles" [ [c_antilles] of nh ]
-      [ethnicity] of c = "morocco" [ [c_morocco] of nh ]
-      [ethnicity] of c = "suriname" [ [c_suriname] of nh ]
-      [ethnicity] of c = "turkey" [ [c_turkey] of nh ]
-      [ethnicity] of c = "nonwestern" [ [c_nonwestern] of nh ]
-      [ "error" ])
+    let ethnicity-score count citizens with [current-neighborhood = nh and ethnicity = [ethnicity] of c] / count citizens with [ current-neighborhood = nh ]
     let public-transport-score [ovstations] of nh
     ;include ethnicity prevalence, public transport
     report ethnicity-score * public-transport-score
@@ -73,24 +71,16 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   
   if [social-class] of c = "middle"
   [
-    let social-class-score (ifelse-value
-      [social-class] of c = "lower" [ count citizens with [current-neighborhood = nh and social-class = "lower"] ]
-      [social-class] of c = "working" [ count citizens with [current-neighborhood = nh and social-class = "working"] ]
-      [social-class] of c = "middle" [ count citizens with [current-neighborhood = nh and social-class = "middle"] ]
-      [social-class] of c = "upper" [ count citizens with [current-neighborhood = nh and social-class = "upper"] ]
-      [ "error" ])    
+    let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
+    
     ;include social-class prevalence, school and health proximity, public transport
     report social-class-score ;* public-transport-score * school-score * health-score
   ]
   
   if [social-class] of c = "upper"
   [
-    let social-class-score (ifelse-value
-      [social-class] of c = "lower" [ count citizens with [current-neighborhood = nh and social-class = "lower"] ]
-      [social-class] of c = "working" [ count citizens with [current-neighborhood = nh and social-class = "working"] ]
-      [social-class] of c = "middle" [ count citizens with [current-neighborhood = nh and social-class = "middle"] ]
-      [social-class] of c = "upper" [ count citizens with [current-neighborhood = nh and social-class = "upper"] ]
-      [ "error" ])    
+    let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
+    
     ;include social-class prevalence, school and health proximity, public transport, recreation and nature amenities.
     report social-class-score ;* public-transport-score * school-score * health-score * recreation-score * nature-score
   ]
