@@ -64,14 +64,16 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   if [social-class] of c = "working"
   [
     let ethnicity-score count citizens with [current-neighborhood = nh and ethnicity = [ethnicity] of c] / count citizens with [ current-neighborhood = nh ]
-    let public-transport-score [ovstations] of nh
-    ;include ethnicity prevalence, public transport
-    report ethnicity-score * public-transport-score
+    let safety-score [crimes] of nh / [population] of nh
+    
+    ;include ethnicity prevalence, safety (crime)
+    report ethnicity-score * safety-score
   ]
   
   if [social-class] of c = "middle"
   [
     let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
+    let public-transport-score [ovstations] of nh
     
     ;include social-class prevalence, school and health proximity, public transport
     report social-class-score ;* public-transport-score * school-score * health-score
@@ -81,7 +83,7 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   [
     let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
     
-    ;include social-class prevalence, school and health proximity, public transport, recreation and nature amenities.
+    ;include social-class prevalence, school and health proximity, recreation and nature amenities.
     report social-class-score ;* public-transport-score * school-score * health-score * recreation-score * nature-score
   ]
   
