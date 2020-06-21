@@ -1,5 +1,6 @@
 to load-data ;run by observer -> to setup
   set nhc []
+  set factors []
   set shape-data gis:load-dataset "data/buurten_32632.shp"
   set housing-data csv:from-file "data/housing_data.csv"
   set neighborhood-data csv:from-file "data/neighborhood_data.csv"
@@ -12,6 +13,8 @@ to load-data ;run by observer -> to setup
   set ov-data csv:from-file "data/ovstations.csv"
   set crime-data csv:from-file "data/crime.csv"
   set daycare-data csv:from-file "data/daycare.csv"
+  set factor-data csv:from-file "data/factors.csv"
+  foreach but-first factor-data [x -> set factors lput item 0 x factors]
 end
 
 to-report retrieve-data [bc variable dataset] ;run by neighborhoods
@@ -96,14 +99,14 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set c_eastern_eu retrieve-data buurtnumber "c_eastern_europe" ethnicity-data
     set c_other_nonwestern retrieve-data buurtnumber "c_other_non_western" ethnicity-data
     ;amenities-data
-    set b_horeca retrieve-data buurtnumber "a_horeca" neighborhood-data
-    set b_amenities retrieve-data buurtnumber "amenities" neighborhood-data
-    set a_health retrieve-data buurtnumber "a_health" neighborhood-data
-    set a_schools retrieve-data buurtnumber "a_schools" neighborhood-data
-    set d_super retrieve-data buurtnumber "d_super" amenities-data
-    set daycare_per_citizen retrieve-data buurtnumber "tot_c" daycare-data
+    set b_horeca retrieve-data buurtnumber "a_horeca" neighborhood-data ;horaca per km2
+    set b_amenities retrieve-data buurtnumber "amenities" neighborhood-data ;amenities per km2
+    set a_health retrieve-data buurtnumber "a_health" neighborhood-data ;GP offices per 1000 citizens
+    set a_schools retrieve-data buurtnumber "a_schools" neighborhood-data ;primary school per km2
+    set d_super retrieve-data buurtnumber "d_super" amenities-data ;nearest big supermarket distance
+    set daycare_per_citizen retrieve-data buurtnumber "tot_c" daycare-data ;daycare capacity per capita
     ;OV station-data
-    set ovstations retrieve-data buurtnumber "total_m" ov-data
+    set ovstations retrieve-data buurtnumber "total_m" ov-data ;TODO Remove, not relevant!
     ;education-data
     set e_low retrieve-data buurtnumber "e_low" education-data
     set e_middle retrieve-data buurtnumber "e_middle" education-data
@@ -117,6 +120,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
   set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
   set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
   set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
+  set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
 end
 
 

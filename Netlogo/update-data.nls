@@ -44,6 +44,11 @@ to define-utility [c ownership] ;run by neighborhoods -> to move-houses
   ]
 end
 
+to-report retrieve-factors [variable class] ;run by neighborhoods
+  report item (position class item 0 factor-data) item ((position variable factors) + 1) factor-data
+end
+
+
 to-report calculate-utility ;run by buy/rent-link -> to define-utility
   let u 0 ;initialize utility
   let agents both-ends ;get agents in the link
@@ -53,44 +58,72 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   ask agents with [breed = neighborhoods] [ set nh self ]
   if not is-agent? c or not is-agent? nh [ error "There seems to be no agents in this link!" ]
   
+  ;to minimize computation, seperate calculations based on class
+  ;then, calculate factors and their respective significance
   if [social-class] of c = "lower"
   [
     let ethnicity-score count citizens with [current-neighborhood = nh and ethnicity = [ethnicity] of c] / count citizens with [ current-neighborhood = nh ]
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "lower"
     
-    ;include ethnicity prevalence
-    report ethnicity-score
+    ;include ethnicity prevalence, safety (crime)
+    report ethnicity-score - ( safety-score * safety-grade )
   ]
   
   if [social-class] of c = "working"
   [
     let ethnicity-score count citizens with [current-neighborhood = nh and ethnicity = [ethnicity] of c] / count citizens with [ current-neighborhood = nh ]
+    let ethnicity-grade retrieve-factors "social cohesion" "working" 
     let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "working"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "working"
     
-    ;include ethnicity prevalence, safety (crime)
-    report ethnicity-score * safety-score
+    ;include ethnicity prevalence, safety (crime), health
+    report ( ethnicity-score * ethnicity-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade )
   ]
   
   if [social-class] of c = "middle"
   [
     let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
-    let public-transport-score [ovstations] of nh
+    let social-class-grade retrieve-factors "social cohesion" "middle" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "middle"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "middle"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "middle"
     
-    ;include social-class prevalence, school and health proximity, public transport
-    report social-class-score ;* public-transport-score * school-score * health-score
+    
+    ;include social-class prevalence, safety (crimes), school and health proximity, average household size
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade )
   ]
   
   if [social-class] of c = "upper"
   [
     let social-class-score count citizens with [current-neighborhood = nh and social-class = [social-class] of c] / count citizens with [ current-neighborhood = nh ]
+    let social-class-grade retrieve-factors "social cohesion" "upper" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "upper"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "upper"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "upper"
+    let amenities-score [b_amenities] of nh
+    let amenities-grade retrieve-factors "amenities" "upper"
+    let horeca-score [b_horeca] of nh
+    let horeca-grade retrieve-factors "nuisance horeca" "upper"
     
-    ;include social-class prevalence, school and health proximity, recreation and nature amenities.
-    report social-class-score ;* public-transport-score * school-score * health-score * recreation-score * nature-score
+    ;include social-class prevalence, safety (crimes), school and health proximity, recreation and nature amenities.
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade ) + ( amenities-score * amenities-grade ) - ( horeca-score * horeca-grade )
   ]
+  ;TODO schools. Should this be a positive or negative factor??
+  
   
   ;report an empty utility (0), if something goes wrong here.
   report u
   error "why did I get here?"
-end ;TODO normalize utility, think of weights of each element, add all factors.
+end 
 
 to-report other-side [l] ;run by citizen -> to move-houses
   let nh nobody
