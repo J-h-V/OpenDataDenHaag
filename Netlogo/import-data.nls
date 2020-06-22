@@ -15,6 +15,7 @@ to load-data ;run by observer -> to setup
   set daycare-data csv:from-file "data/daycare.csv"
   set factor-data csv:from-file "data/factors.csv"
   foreach but-first factor-data [x -> set factors lput item 0 x factors]
+  set migration-data csv:from-file "data/migration.csv"
 end
 
 to-report retrieve-data [bc variable dataset] ;run by neighborhoods
@@ -198,7 +199,7 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
         [ "error" ])
       ;income/budget
-      set budget round random-normal [avg_income] of myself 0.5
+      set budget round random-normal [avg_income] of myself ( [avg_income] of myself / 8 ) ;assuming std of 1/8 the average.
       set income (ifelse-value
         budget <= 25000 [ "low" ]
         budget <= 40000 [ "middle" ]
@@ -217,4 +218,9 @@ to import-citizens ;run by observer -> to setup
   ask citizens [
     calculate-social-class
   ]
+  ;make tallies for later use
+  set p_edu_low count citizens with [education = "low"] / count citizens
+  set p_edu_middle count citizens with [education = "middle"] / count citizens + p_edu_low
+  set p_edu_high count citizens with [education = "high"] / count citizens + p_edu_middle
+  
 end

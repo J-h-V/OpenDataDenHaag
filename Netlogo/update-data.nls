@@ -14,10 +14,6 @@ to calculate-social-class ;run by citizen -> to import-citizens and to introduce
   ;above if-loop is quite hard to read, for further clarification see decision tree in report.
 end
 
-to introduce-new-migrants
-  ;This procedure will create new migrants which enter the model every timestep.
-end
-
 to define-utility [c ownership] ;run by neighborhoods -> to move-houses
   if ownership = "social-rent"
   ;here comes the part rent function
@@ -141,7 +137,15 @@ to update-neighborhoods
   ;TODO change in amenities
   
   ;TODO citizen change from life/death
-  ask neighborhoods [ set population population + nat_change ]
+  ask neighborhoods [ let p_change nat_change / population
+    set population population + population * p_change
+    set available_buy_houses available_buy_houses + available_buy_houses * p_change
+    set available_part_rent_houses available_part_rent_houses + available_part_rent_houses * p_change
+    set available_social_rent_houses available_social_rent_houses + available_social_rent_houses * p_change
+  ]
+  set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
+  set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
+  set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
   
   ;TODO safety changes?
   

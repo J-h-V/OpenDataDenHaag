@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv ]
-globals [ neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household natural-change ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy ]
+globals [ neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household migration-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ social-rent-links social-rent-link ]
@@ -184,9 +184,9 @@ q
 BUTTON
 125
 90
-188
+187
 123
-Help
+HELP
 error \"Welcome to the Agent-Based Model on the effects of migration on the city of The Hague. If you are new to Netlogo (or this model), please refer to the Info tab for a detailed description, or press CTRL + 2 to get there!\"
 NIL
 1
@@ -199,10 +199,10 @@ NIL
 1
 
 BUTTON
-70
-240
-147
-273
+5
+325
+82
+358
 go-once
 go
 NIL
@@ -218,7 +218,7 @@ NIL
 MONITOR
 220
 20
-322
+310
 65
 total households
 count citizens
@@ -266,6 +266,32 @@ PENS
 "default" 1.0 1 -5298144 true "" "plotxy 1 count citizens with [income = \"low\"]"
 "pen-1" 1.0 1 -4079321 true "" "plotxy 2 count citizens with [income = \"middle\"]"
 "pen-2" 1.0 1 -14439633 true "" "plotxy 3 count citizens with [income = \"high\"]"
+
+SLIDER
+10
+165
+190
+198
+avg_migrant_income
+avg_migrant_income
+15000
+30000
+22000.0
+1000
+1
+NIL
+HORIZONTAL
+
+MONITOR
+315
+20
+372
+65
+migrants
+count citizens with [migrant? = true]
+17
+1
+11
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

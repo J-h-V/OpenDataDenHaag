@@ -4,6 +4,7 @@ to setup ;run by observer -> called from dashboard
   initialize-neighborhoods
   initialize-neighborhoods-data
   import-citizens
+  create-migrants
   reset-ticks
 end
 
@@ -20,14 +21,13 @@ end
 
 to go ;run by observer -> called from dashboard
   if ticks >= 40 [ print "Ten years have passed, stopping the model.." stop ]
-  introduce-new-migrants
   consider-moving
   ;other stuff
   time-tick
 end
 
 to time-tick
-  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods]
+  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants]
   set q q + 1
   tick
 end  
@@ -36,12 +36,14 @@ to consider-moving ;run by observer -> to go
   ask citizens[
     let move-chance item (position "percent" item 0 movementage-data) item ( age + 1 ) movementage-data
     if random-float 1 < 2.5 * move-chance [ move-houses ]
+    if current-neighborhood = 0 [ move-houses ] ;people that have not found a home yet, will always keep on looking.
   ]
 end
 
 to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  ask current-neighborhood [set available_buy_houses available_buy_houses + 1]
+  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
+    ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
   move-to nh
   set current-neighborhood nh
   ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
@@ -51,7 +53,8 @@ end
 
 to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]
+  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
+    ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
   move-to nh
   set current-neighborhood nh
   ask current-neighborhood [set available_social_rent_houses available_social_rent_houses - 1]
@@ -61,7 +64,8 @@ end
 
 to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]
+  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
+    ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
   move-to nh
   set current-neighborhood nh
   ask current-neighborhood [set available_part_rent_houses available_part_rent_houses - 1]
@@ -91,10 +95,80 @@ to move-houses ;run by citizen -> to consider-moving
     if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
     if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]
     if is-social-rent-link? winner [ move-neighbhorhoods-social-rent other-side best-social-rent-option ]
-    if winner = nobody [ error "I didn't find a best location!" ] 
+    if winner = nobody [ show "I didn't find a best location!" stop ] 
   ]
   ;Remove links between citizen and neighborhoods so the next citizen can start calculating.
   ask social-rent-links [die]
   ask part-rent-links [die]
   ask buy-links [die]
+end
+
+to create-migrants
+  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data
+  ;define ethnicity locals
+  let p_dutch item ( position "dutch" item 0 migration-data) item (y - 2019) migration-data / influx-count
+  let p_other_western ( item (position "other_western" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_dutch
+  let p_antilles ( item (position "antilles" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_other_western
+  let p_morocco ( item (position "morocco" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_antilles
+  let p_indonesian ( item (position "indonesian" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_morocco
+  let p_suriname ( item (position "suriname" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_indonesian
+  let p_turkey ( item (position "turkey" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_suriname
+  let p_eastern_eu ( item (position "eastern_eu" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_turkey
+  let p_other_nonwestern ( item (position "other_nonwestern" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_eastern_eu
+  ;define age locals
+  let tot_age item (position "tot_age" item 0 migration-data) item (y - 2019) migration-data
+  let p_young item (position "young" item 0 migration-data) item (y - 2019) migration-data / tot_age
+  let p_middle ( item (position "middle" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_young
+  let p_old ( item (position "old" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_middle
+  ;taking averages of education around the city as input for migrants. THIS IS QUITE A BIG ASSUMPTION
+  
+  create-citizens influx-count / 2 / aggregate-cluster-size [ ;assume household size of 2
+    setxy 367 (-239) set shape "person"
+    set size 8
+    set migrant? true
+    ;lifephase
+    let dice_lifephase random-float 1
+    set lifephase (ifelse-value
+      dice_lifephase <= p_young [ "young" ]
+      dice_lifephase <= p_middle [ "middle" ]
+      dice_lifephase <= p_old [ "old" ]
+      [ "error" ])
+    ;age
+    set age (ifelse-value
+      lifephase = "young" [ random 20 ]
+      lifephase = "middle" [ random 45 + 20 ]
+      lifephase = "old" [ random 35 + 65 ]
+      [ 999 ])
+    ;ethnicity
+    let dice_ethnicity random-float 1
+    set ethnicity (ifelse-value
+      dice_ethnicity <= p_dutch ["dutch"]
+      dice_ethnicity <= p_other_western [ "other_western" ]
+      dice_ethnicity <= p_antilles [ "antilles" ]
+      dice_ethnicity <= p_morocco [ "morocco" ]
+      dice_ethnicity <= p_indonesian [ "indonesian" ]
+      dice_ethnicity <= p_suriname [ "suriname" ]
+      dice_ethnicity <= p_turkey [ "turkey" ]
+      dice_ethnicity <= p_eastern_eu [ "eastern_european" ]
+      dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
+      [ "error" ])
+    ;income/budget
+    set budget round random-normal avg_migrant_income ( avg_migrant_income / 8 ) ;assuming std of 1/8 the average.
+    set income (ifelse-value
+      budget <= 25000 [ "low" ]
+      budget <= 40000 [ "middle" ]
+      budget <= 100000 [ "high" ]
+      [ "error" ])
+    ;education
+    let dice_education random-float 1
+    set education (ifelse-value
+      dice_education <= p_edu_low [ "low" ]
+      dice_education <= p_edu_middle [ "middle" ]
+      dice_education <= p_edu_high [ "high" ]
+      [ "error" ])
+    if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+    if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+    calculate-social-class
+    move-houses
+  ]
 end
