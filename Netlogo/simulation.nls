@@ -27,7 +27,7 @@ to go ;run by observer -> called from dashboard
 end
 
 to time-tick
-  if q mod 4 = 0 [ set y y + 1 set q 0 ]
+  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods]
   set q q + 1
   tick
 end  

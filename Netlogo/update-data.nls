@@ -136,9 +136,12 @@ to update-neighborhoods
   ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
   ;Most stuff here are exogenous changes that are modeled as external pushes.
   
+  ;TODO Changes in demographics as a result of movements
+  
   ;TODO change in amenities
   
   ;TODO citizen change from life/death
+  ask neighborhoods [ set population population + nat_change ]
   
   ;TODO safety changes?
   
