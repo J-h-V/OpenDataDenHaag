@@ -117,12 +117,9 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     if avg_price < 1 [ set avg_price avg_income * 9.35 / 1000 ]
     if avg_price < 1 [
       let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods [distance myself]
-      set avg_price avg_price_around show avg_price ] ;if previous fix did not help, use average of the whole city.
+      set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
     if avg_income < 1 [ set avg_income avg_price / 9.35 * 1000 ]
   ]
-  set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
-  set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
-  set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
 end
 
@@ -224,5 +221,7 @@ to import-citizens ;run by observer -> to setup
   set p_edu_low count citizens with [education = "low"] / count citizens
   set p_edu_middle count citizens with [education = "middle"] / count citizens + p_edu_low
   set p_edu_high count citizens with [education = "high"] / count citizens + p_edu_middle
-  
+  ;calculate tallies for neighborhoods
+  update-neighborhood-housing
+  update-citizen-demographics
 end

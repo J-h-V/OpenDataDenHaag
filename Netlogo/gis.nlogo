@@ -10,7 +10,8 @@ social-rent-links-own [ utility ]
 part-rent-links-own [ utility ]
 buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern b_horeca b_amenities a_health a_schools d_super daycare_per_citizen e_low e_middle e_high avg_income]
+neighborhoods-own [ buurtnumber population citizen-count houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties
+  men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern p-dutch p-other-western p-antilles p-morocco p-suriname p-turkey p-indonesian p-eastern-eu p-other-nonwestern p-sc-lower p-sc-working p-sc-middle p-sc-upper b_horeca b_amenities a_health a_schools d_super daycare_per_citizen e_low e_middle e_high avg_income]
 citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase migrant?]
 
 
@@ -121,7 +122,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-25.0
+1.0
 1
 1
 NIL

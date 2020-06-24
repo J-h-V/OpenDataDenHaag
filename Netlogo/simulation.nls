@@ -23,6 +23,9 @@ to go ;run by observer -> called from dashboard
   if ticks >= 40 [ print "Ten years have passed, stopping the model.." stop ]
   consider-moving
   ;other stuff
+  update-neighborhood-housing
+  update-citizen-demographics
+  ;tick time and progress quarter, year.
   time-tick
 end
 
