@@ -14,7 +14,7 @@ to calculate-social-class ;run by citizen -> to import-citizens and to introduce
   ;above if-loop is quite hard to read, for further clarification see decision tree in report.
 end
 
-to define-utility [c ownership] ;run by nieghborhoods -> to move-houses
+to define-utility [c ownership] ;run by neighborhoods -> to move-houses
   ifelse ownership = "social-rent"
   ;here comes the social rent function
   [create-social-rent-link-with c [
