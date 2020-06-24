@@ -1,5 +1,5 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
-extensions [ gis csv ]
+extensions [ gis csv profiler ]
 globals [ neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household migration-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
@@ -121,7 +121,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-50.0
+10.0
 1
 1
 NIL
