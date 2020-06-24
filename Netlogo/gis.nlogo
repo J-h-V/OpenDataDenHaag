@@ -121,7 +121,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-10.0
+50.0
 1
 1
 NIL

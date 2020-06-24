@@ -14,28 +14,31 @@ to calculate-social-class ;run by citizen -> to import-citizens and to introduce
   ;above if-loop is quite hard to read, for further clarification see decision tree in report.
 end
 
-to define-utility [c ownership] ;run by neighborhoods -> to move-houses
-  if ownership = "social-rent"
-  ;here comes the part rent function
+to define-utility [c ownership] ;run by nieghborhoods -> to move-houses
+  ifelse ownership = "social-rent"
+  ;here comes the social rent function
   [create-social-rent-link-with c [
     set color green  
     set utility calculate-utility
     ]
   ]
-  
-  if ownership = "part-rent"
-  ;here comes the part rent function
-  [create-part-rent-link-with c [
-    set color yellow  
-    set utility calculate-utility
+  [
+    ifelse ownership = "part-rent"
+    ;here comes the part rent function
+    [create-part-rent-link-with c [
+      set color yellow  
+      set utility calculate-utility
+      ]
     ]
-  ]
-  
-  if ownership = "buy"
-  ;here comes the buy function
-  [create-buy-link-with c [
-    set color red    
-    set utility calculate-utility
+    [
+      ifelse ownership = "buy"
+      ;here comes the buy function
+      [create-buy-link-with c [
+        set color red    
+        set utility calculate-utility
+        ]
+      ]
+      [ error "wrong ownership type!" ]
     ]
   ]
 end

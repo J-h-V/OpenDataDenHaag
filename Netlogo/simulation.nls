@@ -75,11 +75,12 @@ end
 
 to move-houses ;run by citizen -> to consider-moving
   if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "no availbility!" stop]
-  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= [budget] of myself * 9.35]
-  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= [budget] of myself * 9.35] ;assume renting is more afforable
-  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= [budget] of myself * 9.35] ;assume social renting is even more afforable
+  let house-budget budget * 9.35
+  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.5 * house-budget ]
+  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= house-budget and avg_price >= 0.45 * house-budget ] ;assume renting is more afforable
+  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= house-budget  and avg_price >= 0.25 * house-budget ] ;assume social renting is even more afforable
   if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make sure social class looks at right housing type.
-  if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ]
+  if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ] ;same goes for this line.
   
   ifelse affordable-buy-neighborhoods = nobody and affordable-social-rent-neighborhoods = nobody and affordable-part-rent-neighborhoods = nobody [ show "I am too poor to move" stop]
   [
@@ -104,7 +105,7 @@ to move-houses ;run by citizen -> to consider-moving
 end
 
 to create-migrants
-  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data
+  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data 
   ;define ethnicity locals
   let p_dutch item ( position "dutch" item 0 migration-data) item (y - 2019) migration-data / influx-count
   let p_other_western ( item (position "other_western" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_dutch
