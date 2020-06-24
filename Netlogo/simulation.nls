@@ -76,22 +76,24 @@ end
 to move-houses ;run by citizen -> to consider-moving
   if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "no availbility!" stop]
   let house-budget budget * 9.35
-  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.5 * house-budget ]
-  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= house-budget and avg_price >= 0.45 * house-budget ] ;assume renting is more afforable
-  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= house-budget  and avg_price >= 0.25 * house-budget ] ;assume social renting is even more afforable
+  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.75 * house-budget ]
+  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= house-budget and avg_price * 0.9 >= 0.65 * house-budget ] ;assume renting is more afforable
+  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= house-budget  and avg_price * 0.75 >= 0.5 * house-budget ] ;assume social renting is even more afforable
   if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make sure social class looks at right housing type.
   if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ] ;same goes for this line.
   
   ifelse affordable-buy-neighborhoods = nobody and affordable-social-rent-neighborhoods = nobody and affordable-part-rent-neighborhoods = nobody [ show "I am too poor to move" stop]
   [
-    if affordable-part-rent-neighborhoods != nobody [ ask affordable-part-rent-neighborhoods [ define-utility myself "part-rent" ] ]
     if affordable-social-rent-neighborhoods != nobody [ ask affordable-social-rent-neighborhoods [ define-utility myself "social-rent" ] ]
-    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself "buy" ] ]
-    
     let best-social-rent-option max-one-of social-rent-links [ utility ]
+    if is-agent? best-social-rent-option [ ask best-social-rent-option [ ask other social-rent-links [ die ] ] ]
+    if affordable-part-rent-neighborhoods != nobody [ ask affordable-part-rent-neighborhoods [ define-utility myself "part-rent" ] ]
     let best-part-rent-option max-one-of part-rent-links [ utility ]
+    if is-agent? best-part-rent-option [ ask best-part-rent-option [ ask other part-rent-links [ die ] ] ]
+    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself "buy" ] ]   
     let best-buy-option max-one-of buy-links [ utility ]
-    
+    if is-agent? best-buy-option [ ask best-buy-option [ ask other buy-links [ die ] ] ]
+    ;and the winner is..
     let winner max-one-of ( link-set best-social-rent-option best-part-rent-option best-buy-option ) [utility]
     if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
     if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]

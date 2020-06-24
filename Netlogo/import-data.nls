@@ -65,6 +65,7 @@ to initialize-neighborhoods ;run by observer -> to setup
 end  
 
 to initialize-neighborhoods-data ;run by observer -> to setup
+  
   ask neighborhoods[
     ;housing-data
     ifelse is-number? position buurtnumber nhc [
@@ -106,9 +107,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set a_schools retrieve-data buurtnumber "a_schools" neighborhood-data ;primary school per km2
     set d_super retrieve-data buurtnumber "d_super" amenities-data ;nearest big supermarket distance
     set daycare_per_citizen retrieve-data buurtnumber "tot_c" daycare-data ;daycare capacity per capita
-    ;OV station-data
-    set ovstations retrieve-data buurtnumber "total_m" ov-data ;TODO Remove, not relevant!
-    ;education-data
+                                                                           ;education-data
     set e_low retrieve-data buurtnumber "e_low" education-data
     set e_middle retrieve-data buurtnumber "e_middle" education-data
     set e_high retrieve-data buurtnumber "e_high" education-data
@@ -116,6 +115,9 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set avg_income retrieve-data buurtnumber "income" income-data
     ;Fill missing data points using linear regression coefficient (b=9.35)
     if avg_price < 1 [ set avg_price avg_income * 9.35 / 1000 ]
+    if avg_price < 1 [
+      let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods [distance myself]
+      set avg_price avg_price_around show avg_price ] ;if previous fix did not help, use average of the whole city.
     if avg_income < 1 [ set avg_income avg_price / 9.35 * 1000 ]
   ]
   set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]

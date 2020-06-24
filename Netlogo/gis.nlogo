@@ -121,7 +121,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-10.0
+25.0
 1
 1
 NIL
@@ -289,6 +289,17 @@ MONITOR
 65
 migrants
 count citizens with [migrant? = true]
+17
+1
+11
+
+MONITOR
+110
+250
+177
+295
+NIL
+count links
 17
 1
 11

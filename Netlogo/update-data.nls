@@ -140,7 +140,7 @@ to update-neighborhoods
   ;TODO change in amenities
   
   ;TODO citizen change from life/death
-  ask neighborhoods [ let p_change nat_change / population
+  ask neighborhoods with [population > 0] [ let p_change nat_change / population
     set population population + population * p_change
     set available_buy_houses available_buy_houses + available_buy_houses * p_change
     set available_part_rent_houses available_part_rent_houses + available_part_rent_houses * p_change
