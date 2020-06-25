@@ -172,21 +172,24 @@ end
 
 to update-citizen-demographics ;run by observer -> to update-neighborhoods
   ask neighborhoods [
-    set citizen-count count citizens with [ current-neighborhood = self ]
+    let citizens-of-me citizens with [ current-neighborhood = self ]
+    set citizen-count count citizens-of-me
     if citizen-count > 0 [
-      set p-sc-lower count citizens with [current-neighborhood = self and social-class = "lower" ] / citizen-count
-      set p-sc-working count citizens with [current-neighborhood = self and social-class = "working" ] / citizen-count
-      set p-sc-middle count citizens with [current-neighborhood = self and social-class = "middle" ] / citizen-count
-      set p-sc-upper count citizens with [current-neighborhood = self and social-class = "upper" ] / citizen-count
-      set p-dutch count citizens with [current-neighborhood = self and ethnicity = "dutch" ] / citizen-count
-      set p-other-western count citizens with [current-neighborhood = self and ethnicity = "other_western" ] / citizen-count
-      set p-antilles count citizens with [current-neighborhood = self and ethnicity = "antilles" ] / citizen-count
-      set p-morocco count citizens with [current-neighborhood = self and ethnicity = "morocco" ] / citizen-count
-      set p-suriname count citizens with [current-neighborhood = self and ethnicity = "indonesian" ] / citizen-count
-      set p-turkey count citizens with [current-neighborhood = self and ethnicity = "suriname" ] / citizen-count
-      set p-indonesian count citizens with [current-neighborhood = self and ethnicity = "turkey" ] / citizen-count
-      set p-eastern-eu count citizens with [current-neighborhood = self and ethnicity = "eastern_european" ] / citizen-count
-      set p-other-nonwestern count citizens with [current-neighborhood = self and ethnicity = "other_nonwestern" ] / citizen-count
+      set p-sc-lower count citizens-of-me with [social-class = "lower" ] / citizen-count
+      set p-sc-working count citizens-of-me with [social-class = "working" ] / citizen-count
+      set p-sc-middle count citizens-of-me with [social-class = "middle" ] / citizen-count
+      set p-sc-upper count citizens-of-me with [social-class = "upper" ] / citizen-count
+      set p-dutch count citizens-of-me with [ethnicity = "dutch" ] / citizen-count
+      set p-other-western count citizens-of-me with [ethnicity = "other_western" ] / citizen-count
+      set p-antilles count citizens-of-me with [ethnicity = "antilles" ] / citizen-count
+      set p-morocco count citizens-of-me with [ethnicity = "morocco" ] / citizen-count
+      set p-suriname count citizens-of-me with [ethnicity = "indonesian" ] / citizen-count
+      set p-turkey count citizens-of-me with [ethnicity = "suriname" ] / citizen-count
+      set p-indonesian count citizens-of-me with [ethnicity = "turkey" ] / citizen-count
+      set p-eastern-eu count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count
+      set p-other-nonwestern count citizens-of-me with [ethnicity = "other_nonwestern" ] / citizen-count
+      set avg_income mean [income] of citizens-of-me
+      set avg_price avg_income * 9.35 / 1000 ;update housing price according to average income of citizens (assuming market effects)
     ]
   ]
 end
