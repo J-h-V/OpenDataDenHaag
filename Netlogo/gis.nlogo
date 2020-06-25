@@ -201,9 +201,9 @@ NIL
 
 BUTTON
 5
-325
+370
 82
-358
+403
 go-once
 go
 NIL
@@ -229,9 +229,9 @@ count citizens
 
 PLOT
 5
-360
+405
 205
-510
+555
 distribution of social-class
 NIL
 NIL
@@ -250,9 +250,9 @@ PENS
 
 PLOT
 5
-520
+560
 205
-670
+710
 distribution of income
 NIL
 NIL
@@ -296,9 +296,9 @@ count citizens with [migrant? = true]
 
 MONITOR
 140
-310
-207
 355
+205
+400
 NIL
 count links
 17
@@ -321,7 +321,7 @@ false
 true
 "" ""
 PENS
-"income" 1.0 1 -13345367 true "" "ask neighborhoods with [avg_income > 0 and houses > 10][ plotxy [who] of self avg_income]"
+"income" 1.0 1 -13345367 true "" "ask neighborhoods with [avg_income > 0 and houses > 0][ plotxy [who] of self avg_income]"
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

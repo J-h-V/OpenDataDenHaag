@@ -154,7 +154,8 @@ end
 to update-neighborhoods ;run by observer -> to time-tick
                         ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
                         ;Most stuff here are exogenous changes that are modeled as external pushes.
-  
+                        ;housingmarket updates
+  ask neighborhoods [ set avg_price avg_income * 9.35 ] ;update housing price according to average income of citizens (assuming market effects)
   
   ;TODO change in amenities
   
@@ -170,7 +171,7 @@ to update-neighborhoods ;run by observer -> to time-tick
   
 end
 
-to update-citizen-demographics ;run by observer -> to update-neighborhoods
+to update-citizen-demographics ;run by observer -> to update
   ask neighborhoods [
     let citizens-of-me citizens with [ current-neighborhood = self ]
     set citizen-count count citizens-of-me
@@ -189,12 +190,11 @@ to update-citizen-demographics ;run by observer -> to update-neighborhoods
       set p-eastern-eu count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count
       set p-other-nonwestern count citizens-of-me with [ethnicity = "other_nonwestern" ] / citizen-count
       set avg_income mean [income] of citizens-of-me
-      set avg_price avg_income * 9.35 / 1000 ;update housing price according to average income of citizens (assuming market effects)
     ]
   ]
 end
 
-to update-neighborhood-housing
+to update-neighborhood-housing ;run by observer -> to update
   set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
   set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
   set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
