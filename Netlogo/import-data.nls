@@ -65,7 +65,6 @@ to initialize-neighborhoods ;run by observer -> to setup
 end  
 
 to initialize-neighborhoods-data ;run by observer -> to setup
-  
   ask neighborhoods[
     ;housing-data
     ifelse is-number? position buurtnumber nhc [
@@ -127,7 +126,11 @@ end
 to import-citizens ;run by observer -> to setup
   ask neighborhoods with [houses > 0] [
     let household-count floor houses / aggregate-cluster-size
-    ;lifephase locals
+    ;housing type locals
+    let p-buy-houses floor owned_properties / aggregate-cluster-size
+    let p-part-rent-houses floor part_rent_properties / aggregate-cluster-size + p-buy-houses
+    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses ;TODO FIX THIS SOMEDAY, EVER.
+                                                                                                        ;lifephase locals
     let pop_a ( a_young + a_middle + a_old )
     let p_young 0
     let p_middle 0
@@ -213,6 +216,13 @@ to import-citizens ;run by observer -> to setup
         [ "error" ])
       if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
       if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+      ;housing-type
+      let dice_housing random-float 1
+      set housing-type (ifelse-value
+        dice_housing <= p-buy-houses ["buy"]
+        dice_housing <= p-part-rent-houses ["part-rent"]
+        dice_housing <= p-social-rent-houses ["social-rent"]
+        ["homeless"]) ;TODO ONE DAY FIX THIS TO BE BASED ON DEFINED INCOME, BUT THIS IS SCARELY DIFFICULT TO DO.
   ] ]
   ask citizens [
     calculate-social-class

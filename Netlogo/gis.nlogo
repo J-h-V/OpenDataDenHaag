@@ -12,7 +12,7 @@ buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
 neighborhoods-own [ buurtnumber population citizen-count houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties
   men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern p-dutch p-other-western p-antilles p-morocco p-suriname p-turkey p-indonesian p-eastern-eu p-other-nonwestern p-sc-lower p-sc-working p-sc-middle p-sc-upper b_horeca b_amenities a_health a_schools d_super daycare_per_citizen e_low e_middle e_high avg_income]
-citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase migrant?]
+citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase migrant? housing-type]
 
 
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
@@ -275,9 +275,9 @@ SLIDER
 198
 avg_migrant_income
 avg_migrant_income
-15000
-30000
-22000.0
+10000
+25000
+19000.0
 1000
 1
 NIL
@@ -312,7 +312,7 @@ PLOT
 710
 income per neighborhood
 buurtcode
-log (10) of avg_income
+avg_income
 0.0
 114.0
 0.0

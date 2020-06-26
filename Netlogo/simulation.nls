@@ -39,16 +39,22 @@ to consider-moving ;run by observer -> to go
   ask citizens[
     let move-chance item (position "percent" item 0 movementage-data) item ( age + 1 ) movementage-data
     if random-float 1 < 2.5 * move-chance [ move-houses ]
-    if current-neighborhood = 0 [ move-houses ] ;people that have not found a home yet, will always keep on looking.
+    if housing-type = "homeless" [ move-houses ] ;people that have not found a home yet, will always keep on looking.
+    let house-budget budget * 9.35
+    if housing-type = "social-rent" [if [avg_price] of current-neighborhood >= house-budget [move-houses]] ;move out of neighborhood if I can no longer afford to live there.
+    if housing-type = "part-rent" [if [avg_price] of current-neighborhood * 0.9 >= house-budget [move-houses]]
+    if housing-type = "buy" [if [avg_price] of current-neighborhood * 0.75 >= house-budget [move-houses]]
   ]
 end
 
 to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
-    ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
   move-to nh
   set current-neighborhood nh
+  set housing-type "buy"
   ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
   if [available_buy_houses] of current-neighborhood < 1 [ set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
@@ -56,10 +62,12 @@ end
 
 to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
-    ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
   move-to nh
   set current-neighborhood nh
+  set housing-type "social-rent"
   ask current-neighborhood [set available_social_rent_houses available_social_rent_houses - 1]
   if [available_social_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
@@ -67,12 +75,24 @@ end
 
 to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
-  if is-agent? current-neighborhood [ ;add check if there is a current-neighborhood, because migrants do not have one (yet).
-    ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
   move-to nh
   set current-neighborhood nh
+  set housing-type "part-rent"
   ask current-neighborhood [set available_part_rent_houses available_part_rent_houses - 1]
   if [available_part_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  set move-counter move-counter + 1
+end
+
+to move-neighbhorhoods-homeless ;run by citizen -> to move-houses
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  setxy 367 (-239)
+  set current-neighborhood 0
+  set housing-type "homeless"
   set move-counter move-counter + 1
 end
 
@@ -85,7 +105,8 @@ to move-houses ;run by citizen -> to consider-moving
   if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make sure social class looks at right housing type.
   if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ] ;same goes for this line.
   
-  ifelse affordable-buy-neighborhoods = nobody and affordable-social-rent-neighborhoods = nobody and affordable-part-rent-neighborhoods = nobody [ show "I am too poor to move" stop]
+  let all-candidates (turtle-set affordable-buy-neighborhoods affordable-social-rent-neighborhoods affordable-part-rent-neighborhoods)
+  ifelse count all-candidates = 0 [ show "I am too poor to move" stop]
   [
     if affordable-social-rent-neighborhoods != nobody [ ask affordable-social-rent-neighborhoods [ define-utility myself "social-rent" ] ]
     let best-social-rent-option max-one-of social-rent-links [ utility ]
@@ -132,6 +153,7 @@ to create-migrants
     setxy 367 (-239) set shape "person"
     set size 8
     set migrant? true
+    set housing-type "homeless"
     ;lifephase
     let dice_lifephase random-float 1
     set lifephase (ifelse-value
