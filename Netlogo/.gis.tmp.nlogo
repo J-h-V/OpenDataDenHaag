@@ -324,17 +324,6 @@ PENS
 "income" 1.0 1 -13345367 true "" "ask neighborhoods with [avg_income > 0 and houses > 0][ plotxy [who] of self avg_income]"
 
 MONITOR
-5
-720
-1875
-765
-NIL
-KPI-avg_income
-17
-1
-11
-
-MONITOR
 375
 20
 437
@@ -344,6 +333,24 @@ count citizens with [housing-type = \"homeless\"]
 17
 1
 11
+
+PLOT
+555
+715
+755
+865
+GINI
+NIL
+NIL
+0.0
+100.0
+0.0
+1.0
+false
+false
+"" "clear-plot"
+PENS
+"default" 1.0 0 -16777216 true "" "foreach [0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100] [ x -> plotxy x calc-GINI x ]"
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

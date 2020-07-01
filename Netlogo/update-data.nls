@@ -176,7 +176,7 @@ end
 
 to update-citizen-demographics ;run by observer -> to update
   ask neighborhoods [
-    let citizens-of-me citizens with [ current-neighborhood = self ]
+    let citizens-of-me citizens with [ current-neighborhood = myself ]
     set citizen-count count citizens-of-me
     ifelse citizen-count > 0 [
       set p-sc-lower count citizens-of-me with [social-class = "lower" ] / citizen-count
@@ -192,7 +192,7 @@ to update-citizen-demographics ;run by observer -> to update
       set p-indonesian count citizens-of-me with [ethnicity = "turkey" ] / citizen-count
       set p-eastern-eu count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count
       set p-other-nonwestern count citizens-of-me with [ethnicity = "other_nonwestern" ] / citizen-count
-      set avg_income mean [income] of citizens-of-me
+      set avg_income mean [budget] of citizens-of-me
     ]
     [
       set p-sc-lower 0
@@ -223,4 +223,11 @@ to update-neighborhood-housing ;run by observer -> to update
   set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
   set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
   set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
+end
+
+to-report calc-GINI [ percent ]
+  let max-income max [budget] of citizens
+  let p percent / 100
+  let cum-citizens count citizens
+  report count citizens with [ budget < max-income * p ] / cum-citizens
 end
