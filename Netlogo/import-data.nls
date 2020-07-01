@@ -206,7 +206,7 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
         [ "error" ])
       ;income/budget
-      set budget round random-normal [avg_income] of myself ( [avg_income] of myself / 8 ) ;assuming std of 1/8 the average.
+      set budget round random-normal [avg_income] of myself ( [avg_income] of myself * size-of-std ) ;assuming std of 1/8 the average.
       set income (ifelse-value
         budget <= 25000 [ "low" ]
         budget <= 40000 [ "middle" ]

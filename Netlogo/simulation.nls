@@ -205,7 +205,7 @@ to create-migrants
       dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
       [ "error" ])
     ;income/budget
-    set budget round random-normal avg_migrant_income ( avg_migrant_income / 8 ) ;assuming std of 1/8 the average.
+    set budget round random-normal avg_migrant_income ( avg_migrant_income * size-of-std ) ;assuming std of 1/8 the average.
     set income (ifelse-value
       budget <= 25000 [ "low" ]
       budget <= 40000 [ "middle" ]
