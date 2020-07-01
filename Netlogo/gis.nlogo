@@ -351,6 +351,7 @@ false
 "" "clear-plot"
 PENS
 "default" 1.0 0 -16777216 true "" "foreach [0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100] [ x -> plotxy x calc-GINI x ]"
+"pen-1" 1.0 0 -2674135 true "" "foreach [0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100] [ x -> plotxy x x / 100 ]"
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

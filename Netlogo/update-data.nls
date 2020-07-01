@@ -229,5 +229,5 @@ to-report calc-GINI [ percent ]
   let max-income max [budget] of citizens
   let p percent / 100
   let cum-citizens count citizens
-  report count citizens with [ budget < max-income * p ] / cum-citizens
+  report count citizens with [ budget <= max-income * p ] / cum-citizens
 end
