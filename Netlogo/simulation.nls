@@ -25,8 +25,16 @@ to go ;run by observer -> called from dashboard
   ;other stuff
   update-neighborhood-housing
   update-citizen-demographics
+  update-KPIs
   ;tick time and progress quarter, year.
   time-tick
+end
+
+to update-KPIs
+  set KPI-avg_income []
+  ask neighborhoods[
+    set KPI-avg_income lput (list buurtnumber avg_income) KPI-avg_income
+  ]
 end
 
 to time-tick
@@ -133,20 +141,36 @@ end
 to create-migrants
   let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data 
   ;define ethnicity locals
-  let p_dutch item ( position "dutch" item 0 migration-data) item (y - 2019) migration-data / influx-count
-  let p_other_western ( item (position "other_western" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_dutch
-  let p_antilles ( item (position "antilles" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_other_western
-  let p_morocco ( item (position "morocco" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_antilles
-  let p_indonesian ( item (position "indonesian" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_morocco
-  let p_suriname ( item (position "suriname" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_indonesian
-  let p_turkey ( item (position "turkey" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_suriname
-  let p_eastern_eu ( item (position "eastern_eu" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_turkey
-  let p_other_nonwestern ( item (position "other_nonwestern" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_eastern_eu
+  let p_dutch 0
+  let p_other_western 0
+  let p_antilles 0
+  let p_morocco 0
+  let p_indonesian 0
+  let p_suriname 0
+  let p_turkey 0
+  let p_eastern_eu 0
+  let p_other_nonwestern 0 
+  if influx-count > 0 [
+    set p_dutch item ( position "dutch" item 0 migration-data) item (y - 2019) migration-data / influx-count
+    set p_other_western ( item (position "other_western" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_dutch
+    set p_antilles ( item (position "antilles" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_other_western
+    set p_morocco ( item (position "morocco" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_antilles
+    set p_indonesian ( item (position "indonesian" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_morocco
+    set p_suriname ( item (position "suriname" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_indonesian
+    set p_turkey ( item (position "turkey" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_suriname
+    set p_eastern_eu ( item (position "eastern_eu" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_turkey
+    set p_other_nonwestern ( item (position "other_nonwestern" item 0 migration-data) item (y - 2019) migration-data / influx-count ) + p_eastern_eu
+  ]
   ;define age locals
   let tot_age item (position "tot_age" item 0 migration-data) item (y - 2019) migration-data
-  let p_young item (position "young" item 0 migration-data) item (y - 2019) migration-data / tot_age
-  let p_middle ( item (position "middle" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_young
-  let p_old ( item (position "old" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_middle
+  let p_young 0
+  let p_middle 0
+  let p_old 0
+  if tot_age > 0 [
+    set p_young item (position "young" item 0 migration-data) item (y - 2019) migration-data / tot_age
+    set p_middle ( item (position "middle" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_young
+    set p_old ( item (position "old" item 0 migration-data) item (y - 2019) migration-data / tot_age ) + p_middle
+  ]
   ;taking averages of education around the city as input for migrants. THIS IS QUITE A BIG ASSUMPTION
   
   create-citizens influx-count / 2 / aggregate-cluster-size [ ;assume household size of 2

@@ -70,7 +70,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     ifelse is-number? position buurtnumber nhc [
       set houses item (position "houses" item 0 neighborhood-data) item ((position buurtnumber nhc) + 1) neighborhood-data ]
     [ set houses 0 ]
-    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size exp ( 1 / 3000 * houses ) + 7 ]
+    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size exp ( 1 / 3000 * houses ) + 7 ] ;TODO decide if I want to still scale houses? Unneccesary CPU strain.
     set population retrieve-data buurtnumber "pop" neighborhood-data
     set avg_household_size retrieve-data buurtnumber "avg_household_size" housing-data
     set avg_price retrieve-data buurtnumber "avg_value" neighborhood-data
@@ -129,7 +129,7 @@ to import-citizens ;run by observer -> to setup
     ;housing type locals
     let p-buy-houses floor owned_properties / aggregate-cluster-size
     let p-part-rent-houses floor part_rent_properties / aggregate-cluster-size + p-buy-houses
-    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses ;TODO FIX THIS SOMEDAY, EVER.
+    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses ;TODO assumes random distribution of houses with no regards to income, FIX.
                                                                                                         ;lifephase locals
     let pop_a ( a_young + a_middle + a_old )
     let p_young 0
@@ -164,9 +164,14 @@ to import-citizens ;run by observer -> to setup
     ]    
     ;education locals
     let pop_e ( e_low + e_middle + e_high )
-    let p_e_low e_low / pop_e
-    let p_e_middle ( e_middle / pop_e ) + p_e_low
-    let p_e_high ( e_high / pop_e ) + p_e_middle 
+    let p_e_low 0
+    let p_e_middle 0
+    let p_e_high 0
+    if pop_e > 0 [
+      set p_e_low e_low / pop_e
+      set p_e_middle ( e_middle / pop_e ) + p_e_low
+      set p_e_high ( e_high / pop_e ) + p_e_middle
+    ]
     ;creating the actual citizens within the neighborhood
     hatch-citizens household-count [
       set label ""
@@ -227,10 +232,6 @@ to import-citizens ;run by observer -> to setup
   ask citizens [
     calculate-social-class
   ]
-  ;make tallies for later use
-  set p_edu_low count citizens with [education = "low"] / count citizens
-  set p_edu_middle count citizens with [education = "middle"] / count citizens + p_edu_low
-  set p_edu_high count citizens with [education = "high"] / count citizens + p_edu_middle
   ;calculate tallies for neighborhoods
   update-neighborhood-housing
   update-citizen-demographics

@@ -1,6 +1,6 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv profiler ]
-globals [ neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household migration-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
+globals [ KPI-avg_income neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household migration-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ social-rent-links social-rent-link ]
@@ -121,9 +121,9 @@ SLIDER
 aggregate-cluster-size
 aggregate-cluster-size
 1
-100
-10.0
-1
+250
+50.0
+5
 1
 NIL
 HORIZONTAL
@@ -241,7 +241,7 @@ NIL
 10.0
 true
 false
-"" ""
+"" "clear-plot"
 PENS
 "default" 1.0 1 -5298144 true "" "plotxy 1 count citizens with [social-class = \"lower\"]"
 "pen-1" 1.0 1 -4079321 true "" "plotxy 2 count citizens with [social-class = \"working\"]"
@@ -262,7 +262,7 @@ NIL
 10.0
 true
 false
-"" ""
+"" "clear-plot"
 PENS
 "default" 1.0 1 -5298144 true "" "plotxy 1 count citizens with [income = \"low\"]"
 "pen-1" 1.0 1 -4079321 true "" "plotxy 2 count citizens with [income = \"middle\"]"
@@ -319,9 +319,31 @@ avg_income
 100000.0
 false
 true
-"" ""
+"" "clear-plot"
 PENS
 "income" 1.0 1 -13345367 true "" "ask neighborhoods with [avg_income > 0 and houses > 0][ plotxy [who] of self avg_income]"
+
+MONITOR
+5
+720
+1875
+765
+NIL
+KPI-avg_income
+17
+1
+11
+
+MONITOR
+375
+20
+437
+65
+Homeless
+count citizens with [housing-type = \"homeless\"]
+17
+1
+11
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
