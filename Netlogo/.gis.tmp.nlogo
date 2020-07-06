@@ -87,7 +87,7 @@ ticks
 BUTTON
 10
 15
-100
+70
 48
 setup
 setup
@@ -102,11 +102,11 @@ NIL
 1
 
 BUTTON
-11
-53
-186
-86
-draw the map!
+10
+50
+100
+83
+draw the map
 startup
 NIL
 1
@@ -119,10 +119,10 @@ NIL
 1
 
 BUTTON
-10
-90
-120
-123
+105
+50
+205
+83
 reset the model
 clear-all
 NIL
@@ -136,9 +136,9 @@ NIL
 1
 
 BUTTON
-105
+75
 15
-185
+135
 48
 go
 go
@@ -147,16 +147,16 @@ T
 T
 OBSERVER
 NIL
-G
+NIL
 NIL
 NIL
 1
 
 SLIDER
 10
-130
-190
-163
+135
+205
+168
 aggregate-cluster-size
 aggregate-cluster-size
 1
@@ -222,10 +222,10 @@ q
 11
 
 BUTTON
-125
+10
 90
-187
-123
+80
+130
 HELP
 error \"Welcome to the Agent-Based Model on the effects of migration on the city of The Hague. If you are new to Netlogo (or this model), please refer to the Info tab for a detailed description, or press CTRL + 2 to get there!\"
 NIL
@@ -239,10 +239,10 @@ NIL
 1
 
 BUTTON
-10
-200
-87
-233
+140
+15
+205
+48
 go-once
 go
 NIL
@@ -250,7 +250,7 @@ NIL
 T
 OBSERVER
 NIL
-NIL
+G
 NIL
 NIL
 1
@@ -267,10 +267,10 @@ count citizens
 11
 
 PLOT
-5
-405
+10
+375
 205
-555
+515
 distribution of social-class
 NIL
 NIL
@@ -288,10 +288,10 @@ PENS
 "pen-3" 1.0 1 -14070903 true "" "plotxy 4 count citizens with [social-class = \"upper\"]"
 
 PLOT
-5
-560
+10
+520
 205
-710
+640
 distribution of income
 NIL
 NIL
@@ -309,9 +309,9 @@ PENS
 
 SLIDER
 10
-165
-190
-198
+170
+205
+203
 avg_migrant_income
 avg_migrant_income
 10000
@@ -334,10 +334,10 @@ count citizens with [migrant? = true]
 11
 
 MONITOR
-125
-200
-190
-245
+140
+85
+205
+130
 NIL
 count links
 17
@@ -374,10 +374,10 @@ count citizens with [housing-type = \"homeless\"]
 11
 
 PLOT
-5
-250
+10
+240
 205
-400
+370
 GINI
 NIL
 NIL
@@ -393,10 +393,10 @@ PENS
 "pen-1" 1.0 0 -2674135 true "" "foreach [0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100] [ x -> plotxy x x / 100 ]"
 
 SLIDER
-5
-715
+10
+645
 205
-748
+678
 size-of-std
 size-of-std
 0
@@ -408,15 +408,30 @@ averages
 HORIZONTAL
 
 SWITCH
-5
-750
+10
+680
 205
-783
+713
 random-attributes?
 random-attributes?
 1
 1
 -1000
+
+SLIDER
+10
+205
+205
+238
+migrant-multiplier
+migrant-multiplier
+0
+10
+4.0
+0.5
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
