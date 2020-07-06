@@ -177,7 +177,7 @@ to move-houses ;run by citizen -> to consider-moving
 end
 
 to create-migrants ;run by observer -> to time-tick
-  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data 
+  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data * migrant-multiplier
   ;define ethnicity locals
   let p_dutch 0
   let p_other_western 0
