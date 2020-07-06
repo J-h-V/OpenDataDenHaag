@@ -10,7 +10,7 @@ to load-data ;run by observer -> to setup
   set education-data csv:from-file "data/education_data.csv"
   set amenities-data csv:from-file "data/amenities_data.csv"
   set movementage-data csv:from-file "data/movementage.csv"
-  set ov-data csv:from-file "data/ovstations.csv"
+  ;set ov-data csv:from-file "data/ovstations.csv"
   set crime-data csv:from-file "data/crime.csv"
   set daycare-data csv:from-file "data/daycare.csv"
   set factor-data csv:from-file "data/factors.csv"
@@ -129,8 +129,8 @@ to import-citizens ;run by observer -> to setup
     ;housing type locals
     let p-buy-houses floor owned_properties / aggregate-cluster-size
     let p-part-rent-houses floor part_rent_properties / aggregate-cluster-size + p-buy-houses
-    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses ;TODO assumes random distribution of houses with no regards to income, FIX.
-                                                                                                        ;lifephase locals
+    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses 
+    ;lifephase locals
     let pop_a ( a_young + a_middle + a_old )
     let p_young 0
     let p_middle 0
@@ -219,20 +219,36 @@ to import-citizens ;run by observer -> to setup
         dice_education <= p_e_middle [ "middle" ]
         dice_education <= p_e_high [ "high" ]
         [ "error" ])
-      if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
-      if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+      if not random-attributes? [
+        if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+        if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+      ]
       ;housing-type
-      let dice_housing random-float 1
-      set housing-type (ifelse-value
-        dice_housing <= p-buy-houses ["buy"]
-        dice_housing <= p-part-rent-houses ["part-rent"]
-        dice_housing <= p-social-rent-houses ["social-rent"]
-        ["homeless"]) ;TODO ONE DAY FIX THIS TO BE BASED ON DEFINED INCOME, BUT THIS IS SCARELY DIFFICULT TO DO.
-  ] ]
+      if random-attributes?[
+        let dice_housing random-float 1
+        set housing-type (ifelse-value
+          dice_housing <= p-buy-houses ["buy"]
+          dice_housing <= p-part-rent-houses ["part-rent"]
+          dice_housing <= p-social-rent-houses ["social-rent"]
+          ["homeless"])
+      ]
+    ]
+    if not random-attributes? [
+      let owned_prop_occupied (owned_properties - (owned_properties * p_free / 100 )) / aggregate-cluster-size
+      let part_rent_occupied (part_rent_properties - (part_rent_properties * p_free / 100 )) / aggregate-cluster-size
+      let social_rent_occupied (social_rent_properties - (social_rent_properties * p_free / 100 )) / aggregate-cluster-size
+      ask max-n-of owned_prop_occupied (citizens with [current-neighborhood = myself]) [budget] [ set housing-type "buy" ]
+      ask max-n-of part_rent_occupied (citizens with [current-neighborhood = myself and housing-type = 0]) [budget] [ set housing-type "part-rent" ]
+      ask max-n-of social_rent_occupied (citizens with [current-neighborhood = myself and housing-type = 0]) [budget] [ set housing-type "social-rent" ]
+      ask citizens with [current-neighborhood = myself and housing-type = 0] [ move-neighborhoods-homeless ]
+    ]
+  ]
+  
   ask citizens [
     calculate-social-class
   ]
   ;calculate tallies for neighborhoods
   update-neighborhood-housing
   update-citizen-demographics
+  ask citizens with [ housing-type = "homeless" ] [ move-houses ]
 end

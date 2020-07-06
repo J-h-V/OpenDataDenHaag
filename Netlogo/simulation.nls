@@ -30,14 +30,52 @@ to go ;run by observer -> called from dashboard
   time-tick
 end
 
-to update-KPIs
+to update-KPIs ;run by observer -> to go
+               ;(re)set lists for KPI data
   set KPI-avg_income []
+  set KPI-avg_price []
+  set KPI-available_buy_houses []
+  set KPI-available_part_rent_houses []
+  set KPI-available_social_rent_houses []
+  set KPI-citizen-count []
+  set KPI-p-sc-lower []
+  set KPI-p-sc-working []
+  set KPI-p-sc-middle []
+  set KPI-p-sc-upper []
+  set KPI-p-dutch []
+  set KPI-p-other-western []
+  set KPI-p-antilles []
+  set KPI-p-morocco []
+  set KPI-p-suriname []
+  set KPI-p-turkey []
+  set KPI-p-indonesian []
+  set KPI-p-eastern-eu []
+  set KPI-p-other-nonwestern []
+  ;ask each neighborhoods to fill the list with their data
   ask neighborhoods[
+    set KPI-avg_price lput (list buurtnumber avg_price) KPI-avg_price
     set KPI-avg_income lput (list buurtnumber avg_income) KPI-avg_income
+    set KPI-avg_income lput (list buurtnumber available_buy_houses) KPI-available_buy_houses
+    set KPI-avg_income lput (list buurtnumber available_part_rent_houses) KPI-available_part_rent_houses
+    set KPI-avg_income lput (list buurtnumber available_social_rent_houses) KPI-available_social_rent_houses
+    set KPI-citizen-count lput (list buurtnumber citizen-count) KPI-citizen-count
+    set KPI-p-sc-lower lput (list buurtnumber p-sc-lower) KPI-p-sc-lower
+    set KPI-p-sc-working lput (list buurtnumber p-sc-working) KPI-p-sc-working
+    set KPI-p-sc-middle lput (list buurtnumber p-sc-middle) KPI-p-sc-middle
+    set KPI-p-sc-upper lput (list buurtnumber p-sc-upper) KPI-p-sc-upper
+    set KPI-p-dutch lput (list buurtnumber p-dutch) KPI-p-dutch
+    set KPI-p-other-western lput (list buurtnumber p-other-western) KPI-p-other-western
+    set KPI-p-antilles lput (list buurtnumber p-antilles) KPI-p-antilles
+    set KPI-p-morocco lput (list buurtnumber p-morocco) KPI-p-morocco
+    set KPI-p-suriname lput (list buurtnumber p-suriname) KPI-p-suriname
+    set KPI-p-turkey lput (list buurtnumber p-turkey) KPI-p-turkey
+    set KPI-p-indonesian lput (list buurtnumber p-indonesian) KPI-p-indonesian
+    set KPI-p-eastern-eu lput (list buurtnumber p-eastern-eu) KPI-p-eastern-eu
+    set KPI-p-other-nonwestern lput (list buurtnumber p-other-nonwestern) KPI-p-other-nonwestern
   ]
 end
 
-to time-tick
+to time-tick ;run by observer -> to go
   if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants]
   set q q + 1
   tick
@@ -94,7 +132,7 @@ to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
   set move-counter move-counter + 1
 end
 
-to move-neighbhorhoods-homeless ;run by citizen -> to move-houses
+to move-neighborhoods-homeless ;run by citizen -> to move-houses
   if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
   if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
   if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
@@ -105,7 +143,7 @@ to move-neighbhorhoods-homeless ;run by citizen -> to move-houses
 end
 
 to move-houses ;run by citizen -> to consider-moving
-  if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "no availbility!" stop]
+  if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "There are no neighborhoods!" stop]
   let house-budget budget * 9.35
   let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.75 * house-budget ]
   let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= house-budget and avg_price * 0.9 >= 0.65 * house-budget ] ;assume renting is more afforable
@@ -114,7 +152,7 @@ to move-houses ;run by citizen -> to consider-moving
   if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ] ;same goes for this line.
   
   let all-candidates (turtle-set affordable-buy-neighborhoods affordable-social-rent-neighborhoods affordable-part-rent-neighborhoods)
-  ifelse count all-candidates = 0 [ show "I am too poor to move" stop]
+  ifelse count all-candidates < 1 [ move-neighborhoods-homeless stop]
   [
     if affordable-social-rent-neighborhoods != nobody [ ask affordable-social-rent-neighborhoods [ define-utility myself "social-rent" ] ]
     let best-social-rent-option max-one-of social-rent-links [ utility ]
@@ -130,7 +168,7 @@ to move-houses ;run by citizen -> to consider-moving
     if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
     if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]
     if is-social-rent-link? winner [ move-neighbhorhoods-social-rent other-side best-social-rent-option ]
-    if winner = nobody [ show "I didn't find a best location!" stop ] 
+    if winner = nobody [ move-neighborhoods-homeless stop ] 
   ]
   ;Remove links between citizen and neighborhoods so the next citizen can start calculating.
   ask social-rent-links [die]
@@ -138,7 +176,7 @@ to move-houses ;run by citizen -> to consider-moving
   ask buy-links [die]
 end
 
-to create-migrants
+to create-migrants ;run by observer -> to time-tick
   let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2019) migration-data 
   ;define ethnicity locals
   let p_dutch 0

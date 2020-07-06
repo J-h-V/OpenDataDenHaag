@@ -1,6 +1,45 @@
 __includes [ "import-data.nls" "simulation.nls" "update-data.nls"]
 extensions [ gis csv profiler ]
-globals [ KPI-avg_income neighborhood-data neighborhood-codes nhc factor-data factors crime-data daycare-data shape-data housing-data biggest-avg-household migration-data ethnicity-data amenities-data income-data education-data movementage-data ov-data move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
+globals [
+  ;KPIs
+  KPI-available_buy_houses
+  KPI-available_part_rent_houses
+  KPI-available_social_rent_houses
+  KPI-avg_income
+  KPI-avg_price
+  KPI-citizen-count
+  KPI-p-sc-lower
+  KPI-p-sc-working
+  KPI-p-sc-middle
+  KPI-p-sc-upper
+  KPI-p-dutch
+  KPI-p-other-western
+  KPI-p-antilles
+  KPI-p-morocco
+  KPI-p-suriname
+  KPI-p-turkey
+  KPI-p-indonesian
+  KPI-p-eastern-eu
+  KPI-p-other-nonwestern
+  ;datasets
+  neighborhood-data
+  neighborhood-codes
+  nhc
+  factor-data
+  factors
+  crime-data
+  daycare-data
+  shape-data
+  housing-data
+  migration-data
+  ethnicity-data
+  amenities-data
+  income-data
+  education-data
+  movementage-data
+  ;ov-data < currently not used.
+  ;other globals
+  biggest-avg-household move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ social-rent-links social-rent-link ]
@@ -10,13 +49,13 @@ social-rent-links-own [ utility ]
 part-rent-links-own [ utility ]
 buy-links-own [ utility ]
 patches-own [ buurtcode buurtname ]
-neighborhoods-own [ buurtnumber population citizen-count houses ovstations crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties
+neighborhoods-own [ buurtnumber population citizen-count houses crimes nat_change avg_household_size avg_price p_free available_buy_houses available_part_rent_houses available_social_rent_houses owned_properties part_rent_properties social_rent_properties
   men women a_young a_middle a_old c_dutch c_other_western c_antilles c_morocco c_suriname c_turkey c_indonesian c_eastern_eu c_other_nonwestern p-dutch p-other-western p-antilles p-morocco p-suriname p-turkey p-indonesian p-eastern-eu p-other-nonwestern p-sc-lower p-sc-working p-sc-middle p-sc-upper b_horeca b_amenities a_health a_schools d_super daycare_per_citizen e_low e_middle e_high avg_income]
 citizens-own [ current-neighborhood income budget education ethnicity social-class age lifephase migrant? housing-type]
 
 
 ;Imagine looking at the source expecting a lot of code. This place is deserted.
-;Like, for real, what are you even looking for here?
+;Might want to check the info tab or GitHub repository if this confuses you..
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -367,6 +406,17 @@ size-of-std
 1
 averages
 HORIZONTAL
+
+SWITCH
+5
+750
+205
+783
+random-attributes?
+random-attributes?
+1
+1
+-1000
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
