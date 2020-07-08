@@ -231,3 +231,13 @@ to-report calc-GINI [ percent ]
   let cum-citizens count citizens
   report 1 - count citizens with [ budget >= max-income * p ] / cum-citizens
 end
+
+to inflate-housing-prices
+  ask neighborhoods [
+    set avg_price avg_price * 1.08 ;using Kadaster data, a "modest" 8% rise in value is assumed.
+  ]
+  ask citizens [
+    let dice 1.002 + random-float 0.007
+    set budget budget * dice ;because of inflation, some people start earning more.  
+  ]
+end

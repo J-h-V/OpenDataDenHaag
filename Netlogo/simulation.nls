@@ -76,7 +76,7 @@ to update-KPIs ;run by observer -> to go
 end
 
 to time-tick ;run by observer -> to go
-  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants]
+  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants if housing-market-inflation? [ inflate-housing-prices ] ]
   set q q + 1
   tick
 end  
