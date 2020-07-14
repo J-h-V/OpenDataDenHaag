@@ -161,7 +161,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 250
-50.0
+10.0
 5
 1
 NIL
@@ -799,6 +799,49 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="normal_run" repetitions="16" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>KPI-available_buy_houses</metric>
+    <metric>KPI-available_part_rent_houses</metric>
+    <metric>KPI-available_social_rent_houses</metric>
+    <metric>KPI-avg_income</metric>
+    <metric>KPI-avg_price</metric>
+    <metric>KPI-citizen-count</metric>
+    <metric>KPI-p-sc-lower</metric>
+    <metric>KPI-p-sc-working</metric>
+    <metric>KPI-p-sc-middle</metric>
+    <metric>KPI-p-sc-upper</metric>
+    <metric>KPI-p-dutch</metric>
+    <metric>KPI-p-other-western</metric>
+    <metric>KPI-p-antilles</metric>
+    <metric>KPI-p-morocco</metric>
+    <metric>KPI-p-suriname</metric>
+    <metric>KPI-p-turkey</metric>
+    <metric>KPI-p-indonesian</metric>
+    <metric>KPI-p-eastern-eu</metric>
+    <metric>KPI-p-other-nonwestern</metric>
+    <enumeratedValueSet variable="size-of-std">
+      <value value="0.125"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg_migrant_income">
+      <value value="19000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="random-attributes?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="housing-market-inflation?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="aggregate-cluster-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="migrant-multiplier">
+      <value value="1"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
