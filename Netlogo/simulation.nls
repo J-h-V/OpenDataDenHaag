@@ -55,9 +55,9 @@ to update-KPIs ;run by observer -> to go
   ask neighborhoods[
     set KPI-avg_price lput (list buurtnumber avg_price) KPI-avg_price
     set KPI-avg_income lput (list buurtnumber avg_income) KPI-avg_income
-    set KPI-avg_income lput (list buurtnumber available_buy_houses) KPI-available_buy_houses
-    set KPI-avg_income lput (list buurtnumber available_part_rent_houses) KPI-available_part_rent_houses
-    set KPI-avg_income lput (list buurtnumber available_social_rent_houses) KPI-available_social_rent_houses
+    set KPI-available_buy_houses lput (list buurtnumber available_buy_houses) KPI-available_buy_houses
+    set KPI-available_part_rent_houses lput (list buurtnumber available_part_rent_houses) KPI-available_part_rent_houses
+    set KPI-available_social_rent_houses lput (list buurtnumber available_social_rent_houses) KPI-available_social_rent_houses
     set KPI-citizen-count lput (list buurtnumber citizen-count) KPI-citizen-count
     set KPI-p-sc-lower lput (list buurtnumber p-sc-lower) KPI-p-sc-lower
     set KPI-p-sc-working lput (list buurtnumber p-sc-working) KPI-p-sc-working
