@@ -161,7 +161,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-50.0
+20.0
 5
 1
 NIL
@@ -452,7 +452,7 @@ CHOOSER
 citizen-color
 citizen-color
 "housing type" "social group" "ethnicity" "age"
-0
+1
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
@@ -810,7 +810,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="normal_run" repetitions="16" runMetricsEveryStep="true">
+  <experiment name="normal_run" repetitions="160" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>KPI-available_buy_houses</metric>
@@ -845,7 +845,7 @@ NetLogo 6.1.1
       <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="aggregate-cluster-size">
-      <value value="10"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="migrant-multiplier">
       <value value="1"/>
