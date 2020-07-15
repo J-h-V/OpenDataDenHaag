@@ -246,6 +246,7 @@ to import-citizens ;run by observer -> to setup
   
   ask citizens [
     calculate-social-class
+    if citizen-color = "age" or citizen-color = "ethncity" [ recolor-citizen ]
   ]
   ;calculate tallies for neighborhoods
   update-neighborhood-housing

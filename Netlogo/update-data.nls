@@ -12,6 +12,7 @@ to calculate-social-class ;run by citizen -> to import-citizens and to introduce
     [ ifelse education = "low" [ set social-class "working" ][ ifelse lifephase = "young" [ set social-class "working" ] [ set social-class "middle" ] ] ]
   ]
   ;above if-loop is quite hard to read, for further clarification see decision tree in report.
+  if citizen-color = "social group" [ recolor-citizen ]
 end
 
 to define-utility [c ownership] ;run by neighborhoods -> to move-houses
@@ -239,5 +240,48 @@ to inflate-housing-prices
   ask citizens [
     let dice 1.002 + random-float 0.007
     set budget budget * dice ;because of inflation, some people start earning more.  
+  ]
+end
+
+to recolor-citizen
+  if citizen-color = "housing type" 
+  [
+    set color (ifelse-value
+      housing-type = "buy" [ blue ]
+      housing-type = "part-rent" [ green ]
+      housing-type = "social-rent" [ yellow ]
+      housing-type = "homeless" [ red ]
+      [ black ])
+  ]
+  if citizen-color = "social group" 
+  [
+    set color (ifelse-value
+      social-class = "upper" [ blue ]
+      social-class = "middle" [ green ]
+      social-class = "working" [ yellow ]
+      social-class = "lower" [ red ]
+      [ black ])
+  ]
+  if citizen-color = "ethncity" 
+  [
+    set color (ifelse-value
+      ethnicity = "dutch" [ orange ]
+      ethnicity = "other_western" [ blue ]
+      ethnicity = "antilles" [ brown ]
+      ethnicity = "morocco" [ yellow ]
+      ethnicity = "indonesian" [ violet ]
+      ethnicity = "suriname" [ green ]
+      ethnicity = "turkey" [ cyan ]
+      ethnicity = "eastern_european" [ red ]
+      ethnicity = "other_nonwestern" [ pink ]
+      [ black ])
+  ]
+  if citizen-color = "age" 
+  [
+    set color (ifelse-value
+      lifephase = "young" [ green ]
+      lifephase = "middle" [ yellow ]
+      lifephase = "old" [ red ]
+      [ black ])
   ]
 end

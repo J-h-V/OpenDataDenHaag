@@ -452,7 +452,7 @@ CHOOSER
 citizen-color
 citizen-color
 "housing type" "social group" "ethnicity" "age"
-1
+0
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

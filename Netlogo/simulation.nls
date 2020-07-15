@@ -5,6 +5,7 @@ to setup ;run by observer -> called from dashboard
   initialize-neighborhoods-data
   import-citizens
   create-migrants
+  ask citizens [ recolor-citizen ]
   reset-ticks
 end
 
@@ -104,6 +105,7 @@ to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
   if [available_buy_houses] of current-neighborhood < 1 [ set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
 end
 
 to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
@@ -117,6 +119,7 @@ to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
   ask current-neighborhood [set available_social_rent_houses available_social_rent_houses - 1]
   if [available_social_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
 end
 
 to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
@@ -130,6 +133,7 @@ to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
   ask current-neighborhood [set available_part_rent_houses available_part_rent_houses - 1]
   if [available_part_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
   set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
 end
 
 to move-neighborhoods-homeless ;run by citizen -> to move-houses
@@ -140,6 +144,7 @@ to move-neighborhoods-homeless ;run by citizen -> to move-houses
   set current-neighborhood 0
   set housing-type "homeless"
   set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
 end
 
 to move-houses ;run by citizen -> to consider-moving
@@ -260,5 +265,6 @@ to create-migrants ;run by observer -> to time-tick
     if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
     calculate-social-class
     move-houses
+    if citizen-color = "age" or citizen-color = "ethncity" [ recolor-citizen ]
   ]
 end
