@@ -1,0 +1,5 @@
+# external requirements
+pandas
+matplotlib
+numpy 
+seaborn
