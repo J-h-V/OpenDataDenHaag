@@ -113,11 +113,11 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     ;income-data
     set avg_income retrieve-data buurtnumber "income" income-data
     ;Fill missing data points using linear regression coefficient (b=9.35)
-    if avg_price < 1 [ set avg_price avg_income * 9.35 ]
-    if avg_price < 1 [
+    if avg_price < 1 and houses > 0 [ set avg_price avg_income * 9.35 ]
+    if avg_price < 1 and houses > 0 [
       let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods [distance myself]
       set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
-    if avg_income < 1 [ set avg_income avg_price / 9.35 ]
+    if avg_income < 1 and houses > 0 [ set avg_income avg_price / 9.35 ]
   ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
 end

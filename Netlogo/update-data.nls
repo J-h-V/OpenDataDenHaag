@@ -159,12 +159,12 @@ to update-neighborhoods ;run by observer -> to time-tick
                         ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
                         ;Most stuff here are exogenous changes that are modeled as external pushes.
                         ;housingmarket updates
-  ask neighborhoods [ set avg_price avg_income * 9.35 ] ;update housing price according to average income of citizens (assuming market effects)
+  ask neighborhoods with [ houses > 0 ] [ set avg_price avg_income * 9.35 ] ;update housing price according to average income of citizens (assuming market effects)
   
   ;TODO change in amenities
   
   ;TODO citizen change from life/death
-  ask neighborhoods with [population > 0] [ let p_change nat_change / population
+  ask neighborhoods with [population > 0 and houses > 0] [ let p_change nat_change / population
     set population population + population * p_change
     set available_buy_houses available_buy_houses + available_buy_houses * p_change
     set available_part_rent_houses available_part_rent_houses + available_part_rent_houses * p_change
@@ -176,7 +176,7 @@ to update-neighborhoods ;run by observer -> to time-tick
 end
 
 to update-citizen-demographics ;run by observer -> to update
-  ask neighborhoods [
+  ask neighborhoods with [ houses > 0 ] [
     let citizens-of-me citizens with [ current-neighborhood = myself ]
     set citizen-count count citizens-of-me
     ifelse citizen-count > 0 [
@@ -234,7 +234,7 @@ to-report calc-GINI [ percent ]
 end
 
 to inflate-housing-prices
-  ask neighborhoods [
+  ask neighborhoods with [ houses > 0 ] [
     set avg_price avg_price * 1.08 ;using Kadaster data, a "modest" 8% rise in value is assumed.
   ]
   ask citizens [

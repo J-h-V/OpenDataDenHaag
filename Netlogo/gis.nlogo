@@ -810,7 +810,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="normal_run" repetitions="160" runMetricsEveryStep="true">
+  <experiment name="normal_run" repetitions="160" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>KPI-available_buy_houses</metric>
