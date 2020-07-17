@@ -78,6 +78,12 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set owned_properties retrieve-data buurtnumber "owned_properties" neighborhood-data
     set part_rent_properties retrieve-data buurtnumber "part_rent" neighborhood-data
     set social_rent_properties retrieve-data buurtnumber "social_rent" neighborhood-data
+    if increase-social-housing? and population > 0 [
+      if part_rent_properties > increase-percent [
+        set part_rent_properties part_rent_properties - increase-percent
+        set social_rent_properties social_rent_properties + increase-percent
+      ]
+    ]
     set available_buy_houses floor ( (houses * owned_properties / 100 * p_free / 100) / aggregate-cluster-size )
     set available_part_rent_houses floor ( (houses * part_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
     set available_social_rent_houses floor ( (houses * social_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )

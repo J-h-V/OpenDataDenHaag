@@ -160,8 +160,10 @@ to update-neighborhoods ;run by observer -> to time-tick
                         ;Most stuff here are exogenous changes that are modeled as external pushes.
                         ;housingmarket updates
   ask neighborhoods with [ houses > 0 ] [ set avg_price avg_income * 9.35 ] ;update housing price according to average income of citizens (assuming market effects)
-  
-  ;TODO change in amenities
+  if housing-market-inflation? [ inflate-housing-prices ]
+  if build-more-houses? [ build-houses ]
+  if improve-safety? [ improve-safety ]
+  ;TODO change in amenities?
   
   ;TODO citizen change from life/death
   ask neighborhoods with [population > 0 and houses > 0] [ let p_change nat_change / population
@@ -240,6 +242,26 @@ to inflate-housing-prices
   ask citizens [
     let dice 1.002 + random-float 0.007
     set budget budget * dice ;because of inflation, some people start earning more.  
+  ]
+end
+
+to build-houses
+  ask neighborhoods with [houses > 0] [
+    set available_buy_houses available_buy_houses * ( 1 + (build-percent / 100)) ;(assuming equal amount of building in every neighborhood).
+    set available_part_rent_houses available_part_rent_houses * ( 1 + (build-percent / 100))
+    set available_social_rent_houses available_social_rent_houses * ( 1 + (build-percent / 100))
+  ]
+end
+
+to improve-safety
+  ask max-n-of amount-of-safety-improved neighborhoods with [houses > 0] [crimes] [
+    set crimes crimes * 0.9 ;reduce crime by 10% in this neighborhood.
+  ]
+end
+
+to improve-health
+  ask min-n-of amount-of-health-improved neighborhoods with [houses > 0] [a_health] [
+    set a_health a_health * 1.1 ;increase amount of GP offices per 1000 citizens by 10% in this neighborhood.
   ]
 end
 

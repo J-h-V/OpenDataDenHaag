@@ -86,9 +86,9 @@ ticks
 
 BUTTON
 10
-15
+10
 70
-48
+43
 setup
 setup
 NIL
@@ -103,9 +103,9 @@ NIL
 
 BUTTON
 10
-50
+45
 100
-83
+78
 draw the map
 startup
 NIL
@@ -120,9 +120,9 @@ NIL
 
 BUTTON
 105
-50
+45
 205
-83
+78
 reset the model
 clear-all
 NIL
@@ -137,9 +137,9 @@ NIL
 
 BUTTON
 75
-15
+10
 135
-48
+43
 go
 go
 T
@@ -154,14 +154,14 @@ NIL
 
 SLIDER
 10
-135
+215
 205
-168
+248
 aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-20.0
+10.0
 5
 1
 NIL
@@ -223,9 +223,9 @@ q
 
 BUTTON
 10
-85
+80
 135
-130
+125
 HELP
 error \"Welcome to the Agent-Based Model on the effects of migration on the city of The Hague. If you are new to Netlogo (or this model), please refer to the Info tab for a detailed description, or press CTRL + 2 to get there!\"
 NIL
@@ -240,9 +240,9 @@ NIL
 
 BUTTON
 140
-15
+10
 205
-48
+43
 go-once
 go
 NIL
@@ -268,9 +268,9 @@ count citizens
 
 PLOT
 10
-375
+390
 205
-515
+525
 distribution of social-class
 NIL
 NIL
@@ -289,9 +289,9 @@ PENS
 
 PLOT
 10
-520
+530
 205
-640
+665
 distribution of income
 NIL
 NIL
@@ -308,10 +308,10 @@ PENS
 "pen-2" 1.0 1 -14439633 true "" "plotxy 3 count citizens with [income = \"high\"]"
 
 SLIDER
-10
-170
-205
-203
+210
+750
+380
+783
 avg_migrant_income
 avg_migrant_income
 10000
@@ -335,9 +335,9 @@ count citizens with [migrant? = true]
 
 MONITOR
 140
-85
+80
 205
-130
+125
 NIL
 count links
 17
@@ -375,9 +375,9 @@ count citizens with [housing-type = \"homeless\"]
 
 PLOT
 10
-240
+250
 205
-370
+385
 GINI
 NIL
 NIL
@@ -394,9 +394,9 @@ PENS
 
 SLIDER
 10
-645
+180
 205
-678
+213
 size-of-std
 size-of-std
 0
@@ -408,10 +408,10 @@ averages
 HORIZONTAL
 
 SWITCH
-10
-680
-205
-713
+210
+715
+380
+748
 random-attributes?
 random-attributes?
 1
@@ -419,24 +419,24 @@ random-attributes?
 -1000
 
 SLIDER
-10
-205
-205
-238
+385
+750
+555
+783
 migrant-multiplier
 migrant-multiplier
 0
-10
+4
 1.0
-0.5
+0.1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-10
+385
 715
-205
+555
 748
 housing-market-inflation?
 housing-market-inflation?
@@ -446,13 +446,117 @@ housing-market-inflation?
 
 CHOOSER
 10
-750
+130
 205
-795
+175
 citizen-color
 citizen-color
 "housing type" "social group" "ethnicity" "age"
 1
+
+SWITCH
+560
+715
+730
+748
+increase-social-housing?
+increase-social-housing?
+1
+1
+-1000
+
+SWITCH
+735
+715
+905
+748
+build-more-houses?
+build-more-houses?
+1
+1
+-1000
+
+SWITCH
+910
+715
+1080
+748
+improve-safety?
+improve-safety?
+1
+1
+-1000
+
+SWITCH
+1085
+715
+1255
+748
+improve-health?
+improve-health?
+1
+1
+-1000
+
+SLIDER
+910
+750
+1080
+783
+amount-of-safety-improved
+amount-of-safety-improved
+1
+10
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1085
+750
+1255
+783
+amount-of-health-improved
+amount-of-health-improved
+1
+10
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+560
+750
+730
+783
+increase-percent
+increase-percent
+1
+15
+10.0
+0.5
+1
+NIL
+HORIZONTAL
+
+SLIDER
+735
+750
+905
+783
+build-percent
+build-percent
+0
+10
+5.0
+0.5
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric

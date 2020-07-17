@@ -77,7 +77,7 @@ to update-KPIs ;run by observer -> to go
 end
 
 to time-tick ;run by observer -> to go
-  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants if housing-market-inflation? [ inflate-housing-prices ] ]
+  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants  ]
   set q q + 1
   tick
 end  
@@ -260,7 +260,7 @@ to create-migrants ;run by observer -> to time-tick
       dice_education <= p_edu_low [ "low" ]
       dice_education <= p_edu_middle [ "middle" ]
       dice_education <= p_edu_high [ "high" ]
-      [ "error" ])
+      [ "error" ]) ;THIS ASSUMES THE MIGRANTS HAVE SAME EDUCATION AS THE CITY AVERAGE!!
     if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
     if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
     calculate-social-class
