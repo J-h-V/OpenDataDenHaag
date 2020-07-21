@@ -35,6 +35,7 @@ to update-KPIs ;run by observer -> to go
                ;(re)set lists for KPI data
   set KPI-avg_income []
   set KPI-avg_price []
+  set KPI-avg_utility []
   set KPI-available_buy_houses []
   set KPI-available_part_rent_houses []
   set KPI-available_social_rent_houses []
@@ -56,6 +57,11 @@ to update-KPIs ;run by observer -> to go
   ask neighborhoods[
     set KPI-avg_price lput (list buurtnumber avg_price) KPI-avg_price
     set KPI-avg_income lput (list buurtnumber avg_income) KPI-avg_income
+    let avg_utility 0
+    if count citizens with [ current-neighborhood = myself ] > 0 [
+      set avg_utility mean [calculate-utility-KPI] of citizens with [ current-neighborhood = myself ]
+    ]
+    set KPI-avg_utility lput (list buurtnumber precision avg_utility 3 ) KPI-avg_utility
     set KPI-available_buy_houses lput (list buurtnumber available_buy_houses) KPI-available_buy_houses
     set KPI-available_part_rent_houses lput (list buurtnumber available_part_rent_houses) KPI-available_part_rent_houses
     set KPI-available_social_rent_houses lput (list buurtnumber available_social_rent_houses) KPI-available_social_rent_houses

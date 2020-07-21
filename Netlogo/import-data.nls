@@ -65,12 +65,12 @@ to initialize-neighborhoods ;run by observer -> to setup
 end  
 
 to initialize-neighborhoods-data ;run by observer -> to setup
-  ask neighborhoods[
+  ask neighborhoods [
     ;housing-data
     ifelse is-number? position buurtnumber nhc [
       set houses item (position "houses" item 0 neighborhood-data) item ((position buurtnumber nhc) + 1) neighborhood-data ]
     [ set houses 0 ]
-    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size exp ( 1 / 3000 * houses ) + 7 ] ;TODO decide if I want to still scale houses? Unneccesary CPU strain.
+    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size 8 ]
     set population retrieve-data buurtnumber "pop" neighborhood-data
     set avg_household_size retrieve-data buurtnumber "avg_household_size" housing-data
     set avg_price retrieve-data buurtnumber "avg_value" neighborhood-data
@@ -120,14 +120,33 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set avg_income retrieve-data buurtnumber "income" income-data
     ;Fill missing data points using linear regression coefficient (b=9.35)
     if avg_price < 1 and houses > 0 [ set avg_price avg_income * 9.35 ]
-    if avg_price < 1 and houses > 0 [
-      let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods [distance myself]
-      set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
     if avg_income < 1 and houses > 0 [ set avg_income avg_price / 9.35 ]
+  ]
+  if mixed-use-zoning? [
+    set mixed-use-nhs n-of amount-of-mixed-nhs neighborhoods with [ houses = 0 ] 
+    ask mixed-use-nhs [
+      set houses 1
+      set population 1
+      set shape "house"
+      set crimes avg-neighbors crimes
+      set a_health avg-neighbors a_health
+      set b_horeca avg-neighbors b_horeca
+      set b_amenities avg-neighbors b_amenities
+      set avg_household_size avg-neighbors avg_household_size
+      ;TODO figure out a way to prevent social-cohesion from being 0.
+    ]
+  ]
+  ask neighborhoods with [ avg_price < 1 and houses > 0 ] [
+    if avg_price < 1 and houses > 0 [
+      let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
   ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
 end
 
+to-report avg-neighbors [factor]
+  report round mean [factor] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+end
 
 to import-citizens ;run by observer -> to setup
   ask neighborhoods with [houses > 0] [

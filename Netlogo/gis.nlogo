@@ -7,6 +7,7 @@ globals [
   KPI-available_social_rent_houses
   KPI-avg_income
   KPI-avg_price
+  KPI-avg_utility
   KPI-citizen-count
   KPI-p-sc-lower
   KPI-p-sc-working
@@ -39,7 +40,7 @@ globals [
   movementage-data
   ;ov-data < currently not used.
   ;other globals
-  biggest-avg-household move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
+  biggest-avg-household mixed-use-nhs move-counter q y available-neighborhoods-part-rent available-neighborhoods-social-rent available-neighborhoods-buy p_edu_low p_edu_middle p_edu_high]
 breed [ neighborhoods neighborhood ]
 breed [ citizens citizen ]
 undirected-link-breed [ social-rent-links social-rent-link ]
@@ -154,14 +155,14 @@ NIL
 
 SLIDER
 10
-215
+245
 205
-248
+278
 aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-10.0
+20.0
 5
 1
 NIL
@@ -171,7 +172,7 @@ PLOT
 1265
 10
 1875
-390
+345
 social-class per neighborhood
 buurtcode
 percentage-social-class
@@ -267,10 +268,10 @@ count citizens
 11
 
 PLOT
-10
-390
-205
-525
+1670
+650
+1875
+785
 distribution of social-class
 NIL
 NIL
@@ -288,10 +289,10 @@ PENS
 "pen-3" 1.0 1 -14070903 true "" "plotxy 4 count citizens with [social-class = \"upper\"]"
 
 PLOT
-10
-530
-205
-665
+1265
+650
+1470
+785
 distribution of income
 NIL
 NIL
@@ -308,10 +309,10 @@ PENS
 "pen-2" 1.0 1 -14439633 true "" "plotxy 3 count citizens with [income = \"high\"]"
 
 SLIDER
-210
-750
-380
-783
+10
+315
+205
+348
 avg_migrant_income
 avg_migrant_income
 10000
@@ -319,7 +320,7 @@ avg_migrant_income
 19000.0
 1000
 1
-NIL
+Euro
 HORIZONTAL
 
 MONITOR
@@ -346,9 +347,9 @@ count links
 
 PLOT
 1265
-395
+345
 1875
-710
+650
 income per neighborhood
 buurtcode
 avg_income
@@ -374,10 +375,10 @@ count citizens with [housing-type = \"homeless\"]
 11
 
 PLOT
-10
-250
-205
-385
+1470
+650
+1670
+785
 GINI
 NIL
 NIL
@@ -394,9 +395,9 @@ PENS
 
 SLIDER
 10
-180
+210
 205
-213
+243
 size-of-std
 size-of-std
 0
@@ -408,10 +409,10 @@ averages
 HORIZONTAL
 
 SWITCH
-210
-715
-380
-748
+10
+280
+205
+313
 random-attributes?
 random-attributes?
 1
@@ -419,10 +420,10 @@ random-attributes?
 -1000
 
 SLIDER
+10
 385
-750
-555
-783
+205
+418
 migrant-multiplier
 migrant-multiplier
 0
@@ -430,14 +431,14 @@ migrant-multiplier
 1.0
 0.1
 1
-NIL
+x
 HORIZONTAL
 
 SWITCH
-385
-715
-555
-748
+10
+350
+205
+383
 housing-market-inflation?
 housing-market-inflation?
 1
@@ -455,9 +456,9 @@ citizen-color
 1
 
 SWITCH
-560
+385
 715
-730
+555
 748
 increase-social-housing?
 increase-social-housing?
@@ -466,9 +467,9 @@ increase-social-housing?
 -1000
 
 SWITCH
-735
+210
 715
-905
+380
 748
 build-more-houses?
 build-more-houses?
@@ -529,9 +530,9 @@ NIL
 HORIZONTAL
 
 SLIDER
-560
+385
 750
-730
+555
 783
 increase-percent
 increase-percent
@@ -540,23 +541,86 @@ increase-percent
 10.0
 0.5
 1
-NIL
+%
 HORIZONTAL
+
+SLIDER
+210
+750
+380
+783
+build-percent
+build-percent
+0
+10
+2.5
+0.5
+1
+%
+HORIZONTAL
+
+SLIDER
+560
+750
+730
+783
+transformed-percentage
+transformed-percentage
+0
+100
+50.0
+5
+1
+%
+HORIZONTAL
+
+SWITCH
+560
+715
+730
+748
+transform-houses?
+transform-houses?
+1
+1
+-1000
+
+SWITCH
+735
+715
+905
+748
+mixed-use-zoning?
+mixed-use-zoning?
+0
+1
+-1000
 
 SLIDER
 735
 750
 905
 783
-build-percent
-build-percent
+amount-of-mixed-nhs
+amount-of-mixed-nhs
 0
-10
-5.0
-0.5
+8
+4.0
+1
 1
 NIL
 HORIZONTAL
+
+SWITCH
+10
+175
+205
+208
+recolor-agents?
+recolor-agents?
+1
+1
+-1000
 
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
