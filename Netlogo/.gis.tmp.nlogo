@@ -622,17 +622,6 @@ recolor-agents?
 1
 -1000
 
-MONITOR
-5
-790
-1845
-835
-NIL
-KPI-avg_utility
-17
-1
-11
-
 @#$#@#$#@
 # The Impact of Migration on the Urban Fabric
 ## A Data-Driven Agent-Based Model on the effects of migration on the city of The Hague

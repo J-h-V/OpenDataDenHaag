@@ -363,9 +363,12 @@ end
 
 to build-mixed ;run by observer -> to update-neighborhoods
   ask mixed-use-nhs [
-    set available_buy_houses available_buy_houses + 30
-    set available_part_rent_houses available_part_rent_houses + 70
-    set available_social_rent_houses available_social_rent_houses + 100
+    set available_buy_houses available_buy_houses + ( 60 / aggregate-cluster-size )
+    set available_part_rent_houses available_part_rent_houses + ( 140 / aggregate-cluster-size )
+    set available_social_rent_houses available_social_rent_houses + ( 200 / aggregate-cluster-size )
+    ask n-of ( 20 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-buy myself ]
+    ask n-of ( 45 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-part-rent myself ]
+    ask n-of ( 70 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-social-rent myself ]
   ]
 end
 

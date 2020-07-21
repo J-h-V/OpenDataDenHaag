@@ -592,7 +592,7 @@ SWITCH
 748
 mixed-use-zoning?
 mixed-use-zoning?
-0
+1
 1
 -1000
 

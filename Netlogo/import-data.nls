@@ -128,11 +128,11 @@ to initialize-neighborhoods-data ;run by observer -> to setup
       set houses 1
       set population 1
       set shape "house"
-      set crimes avg-neighbors crimes
-      set a_health avg-neighbors a_health
-      set b_horeca avg-neighbors b_horeca
-      set b_amenities avg-neighbors b_amenities
-      set avg_household_size avg-neighbors avg_household_size
+      set crimes mean [crimes] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set a_health mean [a_health] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set b_horeca mean [b_horeca] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set b_amenities mean [b_amenities] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_household_size mean [avg_household_size] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
       ;TODO figure out a way to prevent social-cohesion from being 0.
     ]
   ]
@@ -142,10 +142,6 @@ to initialize-neighborhoods-data ;run by observer -> to setup
       set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
   ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
-end
-
-to-report avg-neighbors [factor]
-  report round mean [factor] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
 end
 
 to import-citizens ;run by observer -> to setup
