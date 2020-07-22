@@ -112,15 +112,16 @@ to initialize-neighborhoods-data ;run by observer -> to setup
     set a_schools retrieve-data buurtnumber "a_schools" neighborhood-data ;primary school per km2
     set d_super retrieve-data buurtnumber "d_super" amenities-data ;nearest big supermarket distance
     set daycare_per_citizen retrieve-data buurtnumber "tot_c" daycare-data ;daycare capacity per capita
-                                                                           ;education-data
+    
+    ;education-data
     set e_low retrieve-data buurtnumber "e_low" education-data
     set e_middle retrieve-data buurtnumber "e_middle" education-data
     set e_high retrieve-data buurtnumber "e_high" education-data
     ;income-data
     set avg_income retrieve-data buurtnumber "income" income-data
     ;Fill missing data points using linear regression coefficient (b=9.35)
-    if avg_price < 1 and houses > 0 [ set avg_price avg_income * 9.35 ]
-    if avg_income < 1 and houses > 0 [ set avg_income avg_price / 9.35 ]
+    if avg_price < 1 and houses > 0 [ set avg_price round ( avg_income * 9.35 ) ]
+    if avg_income < 1 and houses > 0 [ set avg_income round ( avg_price / 9.35 ) ]
   ]
   if mixed-use-zoning? [
     set mixed-use-nhs n-of amount-of-mixed-nhs neighborhoods with [ houses = 0 ] 
@@ -142,6 +143,7 @@ to initialize-neighborhoods-data ;run by observer -> to setup
       set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
   ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
+  set nhs-with-houses neighborhoods with [ houses > 0 ]
 end
 
 to import-citizens ;run by observer -> to setup

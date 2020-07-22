@@ -51,11 +51,10 @@ end
 
 to-report calculate-utility ;run by buy/rent-link -> to define-utility
   let u 0 ;initialize utility
-  let agents both-ends ;get agents in the link
   let c nobody 
   let nh nobody
-  ask agents with [breed = citizens] [ set c self ] ;assign the agents to local variable
-  ask agents with [breed = neighborhoods] [ set nh self ]
+  ask other-end [ set c self ] ;assign the agents to local variable
+  ask myself [ set nh self ]
   if not is-agent? c or not is-agent? nh [ error "There seems to be no agents in this link!" ]
   if [population] of nh < 1 [ error "This neighborhood is empty!" ]
   
@@ -256,7 +255,8 @@ to update-neighborhoods ;run by observer -> to time-tick
                         ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
                         ;Most stuff here are exogenous changes that are modeled as external pushes.
                         ;housingmarket updates
-  ask neighborhoods with [ houses > 0 ] [ set avg_price avg_income * 9.35 ] ;update housing price according to average income of citizens (assuming market effects)
+  let citizen-nhs neighborhoods with [population > 0 and houses > 0]
+  ask citizen-nhs [ set avg_price round ( avg_income * 9.35 ) ] ;update housing price according to average income of citizens (assuming market effects)
   if housing-market-inflation? [ inflate-housing-prices ]
   if build-more-houses? [ build-houses ]  
   if transform-houses? [ transform-houses ]
@@ -267,7 +267,7 @@ to update-neighborhoods ;run by observer -> to time-tick
   if improve-health? [ improve-health ]
   
   ;citizen change from life/death
-  ask neighborhoods with [population > 0 and houses > 0] [ let p_change nat_change / population
+  ask citizen-nhs [ let p_change nat_change / population
     set population population + population * p_change
     set available_buy_houses available_buy_houses + available_buy_houses * p_change
     set available_part_rent_houses available_part_rent_houses + available_part_rent_houses * p_change
@@ -276,24 +276,24 @@ to update-neighborhoods ;run by observer -> to time-tick
 end
 
 to update-citizen-demographics ;run by observer -> to update
-  ask neighborhoods with [ houses > 0 ] [
+  ask nhs-with-houses [
     let citizens-of-me citizens with [ current-neighborhood = myself ]
     set citizen-count count citizens-of-me
     ifelse citizen-count > 0 [
-      set p-sc-lower count citizens-of-me with [social-class = "lower" ] / citizen-count
-      set p-sc-working count citizens-of-me with [social-class = "working" ] / citizen-count
-      set p-sc-middle count citizens-of-me with [social-class = "middle" ] / citizen-count
-      set p-sc-upper count citizens-of-me with [social-class = "upper" ] / citizen-count
-      set p-dutch count citizens-of-me with [ethnicity = "dutch" ] / citizen-count
-      set p-other-western count citizens-of-me with [ethnicity = "other_western" ] / citizen-count
-      set p-antilles count citizens-of-me with [ethnicity = "antilles" ] / citizen-count
-      set p-morocco count citizens-of-me with [ethnicity = "morocco" ] / citizen-count
-      set p-suriname count citizens-of-me with [ethnicity = "indonesian" ] / citizen-count
-      set p-turkey count citizens-of-me with [ethnicity = "suriname" ] / citizen-count
-      set p-indonesian count citizens-of-me with [ethnicity = "turkey" ] / citizen-count
-      set p-eastern-eu count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count
-      set p-other-nonwestern count citizens-of-me with [ethnicity = "other_nonwestern" ] / citizen-count
-      set avg_income mean [budget] of citizens-of-me
+      set p-sc-lower precision ( count citizens-of-me with [social-class = "lower" ] / citizen-count ) 3
+      set p-sc-working precision ( count citizens-of-me with [social-class = "working" ] / citizen-count ) 3
+      set p-sc-middle precision ( count citizens-of-me with [social-class = "middle" ] / citizen-count ) 3
+      set p-sc-upper max list 0 ( precision ( ( 1 - ( p-sc-lower + p-sc-working + p-sc-middle ) ) ) 3 ) ;a minor, but significant optimization is to "calculate the last variable using the sum.
+      set p-dutch precision ( count citizens-of-me with [ethnicity = "dutch" ] / citizen-count ) 3
+      set p-other-western precision ( count citizens-of-me with [ethnicity = "other_western" ] / citizen-count ) 3
+      set p-antilles precision ( count citizens-of-me with [ethnicity = "antilles" ] / citizen-count ) 3
+      set p-morocco precision ( count citizens-of-me with [ethnicity = "morocco" ] / citizen-count ) 3
+      set p-suriname precision ( count citizens-of-me with [ethnicity = "indonesian" ] / citizen-count ) 3
+      set p-turkey precision ( count citizens-of-me with [ethnicity = "suriname" ] / citizen-count ) 3
+      set p-indonesian precision ( count citizens-of-me with [ethnicity = "turkey" ] / citizen-count ) 3
+      set p-eastern-eu precision ( count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count ) 3
+      set p-other-nonwestern max list 0 ( precision ( ( 1 - ( p-dutch + p-other-western + p-antilles + p-morocco + p-suriname + p-turkey + p-indonesian + p-eastern-eu ) ) ) 3 ) ;a minor, but significant optimization is to "calculate the last variable using the sum.
+      set avg_income round ( mean [budget] of citizens-of-me )
     ]
     [
       set p-sc-lower 0
@@ -333,8 +333,8 @@ to-report calc-GINI [ percent ] ;run by observer -> graph in dashboard
   report 1 - count citizens with [ budget >= max-income * p ] / cum-citizens
 end
 
-to inflate-housing-prices ;
-  ask neighborhoods with [ houses > 0 ] [
+to inflate-housing-prices ;run by observer -> to update-neighborhoods
+  ask nhs-with-houses [
     set avg_price avg_price * 1.08 ;using Kadaster data, a "modest" 8% rise in value is assumed.
   ]
   ask citizens [
