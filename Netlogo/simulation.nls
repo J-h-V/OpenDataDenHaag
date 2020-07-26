@@ -234,7 +234,7 @@ to create-migrants ;run by observer -> to time-tick
       dice_lifephase <= p_young [ "young" ]
       dice_lifephase <= p_middle [ "middle" ]
       dice_lifephase <= p_old [ "old" ]
-      [ "error" ])
+      [ "old" ]) ;assume rounding errors result in people being "old", this prevents errors when the model is run on 1:1 scale.
     ;age
     set age (ifelse-value
       lifephase = "young" [ random 20 ]
