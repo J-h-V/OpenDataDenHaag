@@ -335,11 +335,11 @@ end
 
 to inflate-housing-prices ;run by observer -> to update-neighborhoods
   ask nhs-with-houses [
-    set avg_price avg_price * 1.08 ;using Kadaster data, a "modest" 8% rise in value is assumed.
+    set avg_price round avg_price * 1.07 ;using Kadaster data, a "modest" 7% rise in value is assumed.
   ]
   ask citizens [
-    let dice 1.002 + random-float 0.007
-    set budget budget * dice ;because of inflation, some people start earning more.  
+    let dice 1.03 + random-float 0.08
+    set budget round budget * dice ;because of inflation, some people start earning more.  
   ]
 end
 

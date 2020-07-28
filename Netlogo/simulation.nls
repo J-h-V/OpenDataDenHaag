@@ -181,12 +181,13 @@ to move-houses ;run by citizen -> to consider-moving
     if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
     if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]
     if is-social-rent-link? winner [ move-neighbhorhoods-social-rent other-side best-social-rent-option ]
-    if winner = nobody [ move-neighborhoods-homeless stop ] 
+    if not is-link? winner [ show "No winning link was reported." move-neighborhoods-homeless stop ] 
   ]
   ;Remove links between citizen and neighborhoods so the next citizen can start calculating.
-  ask social-rent-links [die]
-  ask part-rent-links [die]
-  ask buy-links [die]
+  ask links [die]
+  ;ask social-rent-links [die]
+  ;ask part-rent-links [die]
+  ;ask buy-links [die]
 end
 
 to create-migrants ;run by observer -> to time-tick
@@ -256,7 +257,7 @@ to create-migrants ;run by observer -> to time-tick
       dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
       [ "other_nonwestern" ])
     ;income/budget
-    set budget round random-normal avg_migrant_income ( avg_migrant_income * size-of-std ) ;assuming std of 1/8 the average.
+    set budget round max list 0 random-normal avg_migrant_income ( avg_migrant_income * size-of-std ) ;assuming std of 1/8 the average.
     set income (ifelse-value
       budget <= 25000 [ "low" ]
       budget <= 40000 [ "middle" ]

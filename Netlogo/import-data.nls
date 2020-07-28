@@ -142,6 +142,11 @@ to initialize-neighborhoods-data ;run by observer -> to setup
       let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
       set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
   ]
+  ask neighborhoods with [ avg_income < 1 and houses > 0 ] [
+    if avg_income < 1 and houses > 0 [
+      let avg_income_around round mean [avg_income] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_income avg_income_around ] ;if previous fix did not help, use average of the whole city.
+  ]
   set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
   set nhs-with-houses neighborhoods with [ houses > 0 ]
 end
@@ -209,7 +214,7 @@ to import-citizens ;run by observer -> to setup
         dice_lifephase <= p_middle [ "middle" ]
         dice_lifephase <= p_old [ "old" ]
         [ "old" ]) ;assume rounding errors result in people being "old", this prevents errors when the model is run on 1:1 scale.
-      ;age
+                   ;age
       set age (ifelse-value
         lifephase = "young" [ random 20 ]
         lifephase = "middle" [ random 45 + 20 ]
@@ -229,7 +234,7 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
         [ "other_nonwestern" ])
       ;income/budget
-      set budget round random-normal [avg_income] of myself ( [avg_income] of myself * size-of-std ) ;assuming std of 1/8 the average.
+      set budget round max list 0 random-normal [avg_income] of myself ( [avg_income] of myself * size-of-std ) ;assuming std of 1/8 the average.
       set income (ifelse-value
         budget <= 25000 [ "low" ]
         budget <= 40000 [ "middle" ]
