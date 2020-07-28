@@ -56,7 +56,7 @@ to-report calculate-utility ;run by buy/rent-link -> to define-utility
   ask other-end [ set c self ] ;assign the agents to local variable
   ask myself [ set nh self ]
   if not is-agent? c or not is-agent? nh [ error "There seems to be no agents in this link!" ]
-  if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+  if [population] of nh < 1 [ print "This neighborhood is empty!" report 0 ]
   
   ;to minimize computation, seperate calculations based on class
   ;then, calculate factors and their respective significance

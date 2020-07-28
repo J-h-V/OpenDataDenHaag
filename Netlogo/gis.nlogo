@@ -163,7 +163,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-1.0
+100.0
 1
 1
 NIL
@@ -403,7 +403,7 @@ size-of-std
 size-of-std
 0
 1
-0.125
+0.5
 0.125
 1
 averages
@@ -416,7 +416,7 @@ SWITCH
 313
 random-attributes?
 random-attributes?
-1
+0
 1
 -1000
 
@@ -1105,7 +1105,7 @@ NetLogo 6.1.1
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="full-run-1" repetitions="32" runMetricsEveryStep="true">
+  <experiment name="full-run-1" repetitions="2" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>KPI-available_buy_houses</metric>

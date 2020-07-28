@@ -214,7 +214,7 @@ to import-citizens ;run by observer -> to setup
         lifephase = "young" [ random 20 ]
         lifephase = "middle" [ random 45 + 20 ]
         lifephase = "old" [ random 35 + 65 ]
-        [ 999 ])
+        [ random 35 + 65 ])
       ;ethnicity
       let dice_ethnicity random-float 1
       set ethnicity (ifelse-value
@@ -227,21 +227,21 @@ to import-citizens ;run by observer -> to setup
         dice_ethnicity <= p_turkey [ "turkey" ]
         dice_ethnicity <= p_eastern_eu [ "eastern_european" ]
         dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
-        [ "error" ])
+        [ "other_nonwestern" ])
       ;income/budget
       set budget round random-normal [avg_income] of myself ( [avg_income] of myself * size-of-std ) ;assuming std of 1/8 the average.
       set income (ifelse-value
         budget <= 25000 [ "low" ]
         budget <= 40000 [ "middle" ]
         budget <= 100000 [ "high" ]
-        [ "error" ])
+        [ "high" ])
       ;education
       let dice_education random-float 1
       set education (ifelse-value
         dice_education <= p_e_low [ "low" ]
         dice_education <= p_e_middle [ "middle" ]
         dice_education <= p_e_high [ "high" ]
-        [ "error" ])
+        [ "high" ])
       if not random-attributes? [
         if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
         if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
@@ -249,11 +249,11 @@ to import-citizens ;run by observer -> to setup
       ;housing-type
       if random-attributes?[
         let dice_housing random-float 1
-        set housing-type (ifelse-value
-          dice_housing <= p-buy-houses ["buy"]
-          dice_housing <= p-part-rent-houses ["part-rent"]
-          dice_housing <= p-social-rent-houses ["social-rent"]
-          ["homeless"])
+        (ifelse
+          dice_housing <= p-buy-houses [set housing-type "buy"]
+          dice_housing <= p-part-rent-houses [set housing-type "part-rent"]
+          dice_housing <= p-social-rent-houses [set housing-type "social-rent"]
+          [ move-neighborhoods-homeless ])
       ]
     ]
     if not random-attributes? [

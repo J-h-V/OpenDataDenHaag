@@ -155,6 +155,7 @@ to move-neighborhoods-homeless ;run by citizen -> to move-houses
 end
 
 to move-houses ;run by citizen -> to consider-moving
+  ask links [ show "I should have been removed already." die ] ;to make sure no remnant links from previous agents are still present, ask them to clear out.
   if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "There are no neighborhoods!" stop]
   let house-budget budget * 9.35
   let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.75 * house-budget ]
@@ -240,7 +241,7 @@ to create-migrants ;run by observer -> to time-tick
       lifephase = "young" [ random 20 ]
       lifephase = "middle" [ random 45 + 20 ]
       lifephase = "old" [ random 35 + 65 ]
-      [ 999 ])
+      [ random 35 + 65 ])
     ;ethnicity
     let dice_ethnicity random-float 1
     set ethnicity (ifelse-value
@@ -253,23 +254,25 @@ to create-migrants ;run by observer -> to time-tick
       dice_ethnicity <= p_turkey [ "turkey" ]
       dice_ethnicity <= p_eastern_eu [ "eastern_european" ]
       dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
-      [ "error" ])
+      [ "other_nonwestern" ])
     ;income/budget
     set budget round random-normal avg_migrant_income ( avg_migrant_income * size-of-std ) ;assuming std of 1/8 the average.
     set income (ifelse-value
       budget <= 25000 [ "low" ]
       budget <= 40000 [ "middle" ]
       budget <= 100000 [ "high" ]
-      [ "error" ])
+      [ "high" ])
     ;education
     let dice_education random-float 1
     set education (ifelse-value
       dice_education <= p_edu_low [ "low" ]
       dice_education <= p_edu_middle [ "middle" ]
       dice_education <= p_edu_high [ "high" ]
-      [ "error" ]) ;THIS ASSUMES THE MIGRANTS HAVE SAME EDUCATION AS THE CITY AVERAGE!!
-    if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
-    if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+      [ "high" ]) ;THIS ASSUMES THE MIGRANTS HAVE SAME EDUCATION AS THE CITY AVERAGE!!
+    if not random-attributes? [
+      if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+      if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+    ]
     calculate-social-class
     move-houses
     if citizen-color = "age" or citizen-color = "ethncity" [ recolor-citizen ]
