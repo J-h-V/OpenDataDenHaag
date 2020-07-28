@@ -269,9 +269,9 @@ to update-neighborhoods ;run by observer -> to time-tick
   ;citizen change from life/death
   ask citizen-nhs [ let p_change nat_change / population
     set population population + population * p_change
-    set available_buy_houses available_buy_houses + available_buy_houses * p_change
-    set available_part_rent_houses available_part_rent_houses + available_part_rent_houses * p_change
-    set available_social_rent_houses available_social_rent_houses + available_social_rent_houses * p_change
+    set available_buy_houses floor max list 0 (available_buy_houses + available_buy_houses * p_change)
+    set available_part_rent_houses floor max list 0 (available_part_rent_houses + available_part_rent_houses * p_change)
+    set available_social_rent_houses floor max list 0 (available_social_rent_houses + available_social_rent_houses * p_change)
   ] 
 end
 
@@ -345,9 +345,9 @@ end
 
 to build-houses ;run by observer -> to update-neighborhoods
   ask min-n-of 5 neighborhoods with [houses > 0] [ available_buy_houses + available_part_rent_houses + available_social_rent_houses ] [
-    set available_buy_houses available_buy_houses * ( 1 + (build-percent / 100)) ;(assuming equal amount of building in every neighborhood).
-    set available_part_rent_houses available_part_rent_houses * ( 1 + (build-percent / 100))
-    set available_social_rent_houses available_social_rent_houses * ( 1 + (build-percent / 100))
+    set available_buy_houses floor available_buy_houses * ( 1 + (build-percent / 100)) ;(assuming equal amount of building in every neighborhood).
+    set available_part_rent_houses floor available_part_rent_houses * ( 1 + (build-percent / 100))
+    set available_social_rent_houses floor available_social_rent_houses * ( 1 + (build-percent / 100))
   ]
 end
 
@@ -355,20 +355,20 @@ end
 to transform-houses ;run by observer -> to update-neighborhoods
   ask min-n-of 5 neighborhoods with [houses > 0] [ available_part_rent_houses + available_social_rent_houses ] [
     let transformed available_buy_houses * transformed-percentage / 100 ;% of available houses for sale are bought by government, then transformed to rental property.
-    set available_buy_houses available_buy_houses - transformed
-    set available_part_rent_houses available_part_rent_houses + transformed
-    set available_social_rent_houses available_social_rent_houses + transformed
+    set available_buy_houses floor available_buy_houses - transformed
+    set available_part_rent_houses floor available_part_rent_houses + transformed
+    set available_social_rent_houses floor available_social_rent_houses + transformed
   ]
 end
 
 to build-mixed ;run by observer -> to update-neighborhoods
   ask mixed-use-nhs [
-    set available_buy_houses available_buy_houses + ( 60 / aggregate-cluster-size )
-    set available_part_rent_houses available_part_rent_houses + ( 140 / aggregate-cluster-size )
-    set available_social_rent_houses available_social_rent_houses + ( 200 / aggregate-cluster-size )
-    ask n-of ( 20 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-buy myself ]
-    ask n-of ( 45 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-part-rent myself ]
-    ask n-of ( 70 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-social-rent myself ]
+    set available_buy_houses floor available_buy_houses + ( 60 / aggregate-cluster-size )
+    set available_part_rent_houses floor available_part_rent_houses + ( 140 / aggregate-cluster-size )
+    set available_social_rent_houses floor available_social_rent_houses + ( 200 / aggregate-cluster-size )
+    ask n-of ( floor 20 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-buy myself ]
+    ask n-of ( floor 45 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-part-rent myself ]
+    ask n-of ( floor 70 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-social-rent myself ]
   ]
 end
 

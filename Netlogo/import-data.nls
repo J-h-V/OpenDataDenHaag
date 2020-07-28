@@ -84,9 +84,9 @@ to initialize-neighborhoods-data ;run by observer -> to setup
         set social_rent_properties social_rent_properties + increase-percent
       ]
     ]
-    set available_buy_houses floor ( (houses * owned_properties / 100 * p_free / 100) / aggregate-cluster-size )
-    set available_part_rent_houses floor ( (houses * part_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
-    set available_social_rent_houses floor ( (houses * social_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_buy_houses max list 0 floor ( (houses * owned_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_part_rent_houses max list 0 floor ( (houses * part_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_social_rent_houses max list 0 floor ( (houses * social_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
     ;natural-change
     set nat_change retrieve-data buurtnumber "nat_change" neighborhood-data
     ;citizen-data

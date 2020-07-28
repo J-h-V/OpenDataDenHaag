@@ -163,7 +163,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-5.0
+4.0
 1
 1
 NIL
@@ -403,7 +403,7 @@ size-of-std
 size-of-std
 0
 1
-0.0
+0.125
 0.125
 1
 averages
@@ -416,7 +416,7 @@ SWITCH
 313
 random-attributes?
 random-attributes?
-0
+1
 1
 -1000
 
@@ -442,7 +442,7 @@ SWITCH
 383
 housing-market-inflation?
 housing-market-inflation?
-0
+1
 1
 -1000
 
@@ -1057,7 +1057,7 @@ NetLogo 6.1.1
       <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="aggregate-cluster-size">
-      <value value="1"/>
+      <value value="4"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="improve-health?">
       <value value="false"/>
