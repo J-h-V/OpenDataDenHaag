@@ -103,6 +103,7 @@ end
 
 to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_buy_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
   if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
   if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
   if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
@@ -117,6 +118,7 @@ end
 
 to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_social_rent_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
   if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
   if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
   if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
@@ -131,6 +133,7 @@ end
 
 to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
   if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_part_rent_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
   if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
   if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
   if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
