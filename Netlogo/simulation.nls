@@ -53,6 +53,8 @@ to update-KPIs ;run by observer -> to go
   set KPI-p-indonesian []
   set KPI-p-eastern-eu []
   set KPI-p-other-nonwestern []
+  set KPI-homeless count citizens with [housing-type = "homeless"]
+  set KPI-homeless-migrants count citizens with [housing-type = "homeless" and migrant? = true]
   ;ask each neighborhoods to fill the list with their data
   ask neighborhoods[
     set KPI-avg_price lput (list buurtnumber avg_price) KPI-avg_price

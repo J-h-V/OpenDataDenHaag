@@ -22,6 +22,8 @@ globals [
   KPI-p-indonesian
   KPI-p-eastern-eu
   KPI-p-other-nonwestern
+  KPI-homeless
+  KPI-homeless-migrants
   ;datasets
   neighborhood-data
   neighborhood-codes
