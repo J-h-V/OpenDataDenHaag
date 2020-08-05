@@ -125,3 +125,5 @@ dmypy.json
 
 # Netlogo temp files
 .tmp.nlogo
+
+Python/output/full_df.csv
