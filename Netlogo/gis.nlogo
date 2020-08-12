@@ -165,7 +165,7 @@ aggregate-cluster-size
 aggregate-cluster-size
 1
 100
-4.0
+10.0
 1
 1
 NIL
@@ -320,7 +320,7 @@ avg_migrant_income
 avg_migrant_income
 10000
 25000
-19000.0
+21000.0
 1000
 1
 Euro
@@ -405,7 +405,7 @@ size-of-std
 size-of-std
 0
 1
-0.125
+0.05
 0.125
 1
 averages
@@ -1634,7 +1634,7 @@ NetLogo 6.1.1
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="sensitivity-migration-influx" repetitions="32" runMetricsEveryStep="true">
+  <experiment name="sensitivity-migration-income" repetitions="32" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>KPI-homeless</metric>
