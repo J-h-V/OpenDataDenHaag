@@ -127,3 +127,5 @@ dmypy.json
 .tmp.nlogo
 
 Python/output/full_df.csv
+
+Netlogo/.gis.tmp.nlogo
