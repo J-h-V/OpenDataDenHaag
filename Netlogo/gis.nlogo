@@ -320,7 +320,7 @@ avg_migrant_income
 avg_migrant_income
 10000
 25000
-21000.0
+19000.0
 1000
 1
 Euro
@@ -406,7 +406,7 @@ size-of-std
 0
 1
 0.05
-0.125
+0.01
 1
 averages
 HORIZONTAL
@@ -1723,7 +1723,7 @@ NetLogo 6.1.1
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="full-run-v2" repetitions="32" runMetricsEveryStep="true">
+  <experiment name="full-run-aggregation-20" repetitions="32" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>KPI-homeless</metric>
@@ -1762,7 +1762,7 @@ NetLogo 6.1.1
       <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="aggregate-cluster-size">
-      <value value="10"/>
+      <value value="20"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="improve-health?">
       <value value="true"/>
@@ -1974,6 +1974,95 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="housing-market-inflation?">
       <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="transformed-percentage">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="migrant-multiplier">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mixed-use-zoning?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="improve-safety?">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="sensitivity-aggregation size" repetitions="32" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>KPI-homeless</metric>
+    <metric>KPI-homeless-migrants</metric>
+    <metric>KPI-available_buy_houses</metric>
+    <metric>KPI-available_part_rent_houses</metric>
+    <metric>KPI-available_social_rent_houses</metric>
+    <metric>KPI-avg_income</metric>
+    <metric>KPI-avg_price</metric>
+    <metric>KPI-avg_utility</metric>
+    <metric>KPI-citizen-count</metric>
+    <metric>KPI-p-sc-lower</metric>
+    <metric>KPI-p-sc-working</metric>
+    <metric>KPI-p-sc-middle</metric>
+    <metric>KPI-p-sc-upper</metric>
+    <metric>KPI-p-dutch</metric>
+    <metric>KPI-p-other-western</metric>
+    <metric>KPI-p-antilles</metric>
+    <metric>KPI-p-morocco</metric>
+    <metric>KPI-p-suriname</metric>
+    <metric>KPI-p-turkey</metric>
+    <metric>KPI-p-indonesian</metric>
+    <metric>KPI-p-eastern-eu</metric>
+    <metric>KPI-p-other-nonwestern</metric>
+    <enumeratedValueSet variable="size-of-std">
+      <value value="0.05"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="transform-houses?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg_migrant_income">
+      <value value="19000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="amount-of-health-improved">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="aggregate-cluster-size">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="10"/>
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="improve-health?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="amount-of-mixed-nhs">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="citizen-color">
+      <value value="&quot;social group&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="build-percent">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="amount-of-safety-improved">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="increase-social-housing?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recolor-agents?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="build-more-houses?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="increase-percent">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="random-attributes?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="housing-market-inflation?">
       <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="transformed-percentage">
