@@ -1,0 +1,286 @@
+to setup ;run by observer -> called from dashboard
+  reset-model
+  load-data
+  initialize-neighborhoods
+  initialize-neighborhoods-data
+  import-citizens
+  create-migrants
+  ask citizens [ recolor-citizen ]
+  reset-ticks
+end
+
+to reset-model ;run by observer -> to setup
+               ;instead of using clear-all, this method prevents the deletion of the GIS map, which is process intensive to load back in. 
+  clear-turtles
+  clear-globals
+  clear-ticks
+  clear-all-plots
+  clear-output
+  set y 2017
+  set q 1 
+end
+
+to go ;run by observer -> called from dashboard
+  if ticks >= 15 [ print "Four years have passed. Stopping the model.." stop ]
+  consider-moving
+  ;other stuff
+  update-neighborhood-housing
+  update-citizen-demographics
+  update-KPIs
+  ;tick time and progress quarter, year.
+  time-tick
+end
+
+to update-KPIs ;run by observer -> to go
+               ;(re)set lists for KPI data
+  set KPI-avg_income []
+  set KPI-avg_price []
+  set KPI-avg_utility []
+  set KPI-available_buy_houses []
+  set KPI-available_part_rent_houses []
+  set KPI-available_social_rent_houses []
+  set KPI-citizen-count []
+  set KPI-p-sc-lower []
+  set KPI-p-sc-working []
+  set KPI-p-sc-middle []
+  set KPI-p-sc-upper []
+  set KPI-p-dutch []
+  set KPI-p-other-western []
+  set KPI-p-antilles []
+  set KPI-p-morocco []
+  set KPI-p-suriname []
+  set KPI-p-turkey []
+  set KPI-p-indonesian []
+  set KPI-p-eastern-eu []
+  set KPI-p-other-nonwestern []
+  set KPI-homeless count citizens with [housing-type = "homeless"]
+  set KPI-homeless-migrants count citizens with [housing-type = "homeless" and migrant? = true]
+  ;ask each neighborhoods to fill the list with their data
+  ask neighborhoods[
+    set KPI-avg_price lput (list buurtnumber avg_price) KPI-avg_price
+    set KPI-avg_income lput (list buurtnumber avg_income) KPI-avg_income
+    let avg_utility 0
+    let my-citizens citizens with [ current-neighborhood = myself ]
+    if count my-citizens > 0 [
+      set avg_utility mean [calculate-utility-KPI] of my-citizens
+    ]
+    set KPI-avg_utility lput (list buurtnumber precision avg_utility 3 ) KPI-avg_utility
+    set KPI-available_buy_houses lput (list buurtnumber available_buy_houses) KPI-available_buy_houses
+    set KPI-available_part_rent_houses lput (list buurtnumber available_part_rent_houses) KPI-available_part_rent_houses
+    set KPI-available_social_rent_houses lput (list buurtnumber available_social_rent_houses) KPI-available_social_rent_houses
+    set KPI-citizen-count lput (list buurtnumber citizen-count) KPI-citizen-count
+    set KPI-p-sc-lower lput (list buurtnumber p-sc-lower) KPI-p-sc-lower
+    set KPI-p-sc-working lput (list buurtnumber p-sc-working) KPI-p-sc-working
+    set KPI-p-sc-middle lput (list buurtnumber p-sc-middle) KPI-p-sc-middle
+    set KPI-p-sc-upper lput (list buurtnumber p-sc-upper) KPI-p-sc-upper
+    set KPI-p-dutch lput (list buurtnumber p-dutch) KPI-p-dutch
+    set KPI-p-other-western lput (list buurtnumber p-other-western) KPI-p-other-western
+    set KPI-p-antilles lput (list buurtnumber p-antilles) KPI-p-antilles
+    set KPI-p-morocco lput (list buurtnumber p-morocco) KPI-p-morocco
+    set KPI-p-suriname lput (list buurtnumber p-suriname) KPI-p-suriname
+    set KPI-p-turkey lput (list buurtnumber p-turkey) KPI-p-turkey
+    set KPI-p-indonesian lput (list buurtnumber p-indonesian) KPI-p-indonesian
+    set KPI-p-eastern-eu lput (list buurtnumber p-eastern-eu) KPI-p-eastern-eu
+    set KPI-p-other-nonwestern lput (list buurtnumber p-other-nonwestern) KPI-p-other-nonwestern
+  ]
+end
+
+to time-tick ;run by observer -> to go
+  if q mod 4 = 0 [ set y y + 1 set q 0 update-neighborhoods create-migrants  ]
+  set q q + 1
+  tick
+end  
+
+to consider-moving ;run by observer -> to go
+  ask citizens[
+    let move-chance item (position "percent" item 0 movementage-data) item ( age + 1 ) movementage-data
+    if random-float 1 < 2.5 * move-chance [ move-houses ]
+    if housing-type = "homeless" [ move-houses ] ;people that have not found a home yet, will always keep on looking.
+    let house-budget budget * 9.35
+    if housing-type = "social-rent" [if [avg_price] of current-neighborhood >= house-budget [move-houses]] ;move out of neighborhood if I can no longer afford to live there.
+    if housing-type = "part-rent" [if [avg_price] of current-neighborhood * 0.9 >= house-budget [move-houses]]
+    if housing-type = "buy" [if [avg_price] of current-neighborhood * 0.75 >= house-budget [move-houses]]
+  ]
+end
+
+to move-neighbhorhoods-buy [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_buy_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  move-to nh
+  set current-neighborhood nh
+  set housing-type "buy"
+  ask current-neighborhood [set available_buy_houses available_buy_houses - 1]
+  if [available_buy_houses] of current-neighborhood < 1 [ set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
+end
+
+to move-neighbhorhoods-social-rent [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_social_rent_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  move-to nh
+  set current-neighborhood nh
+  set housing-type "social-rent"
+  ask current-neighborhood [set available_social_rent_houses available_social_rent_houses - 1]
+  if [available_social_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
+end
+
+to move-neighbhorhoods-part-rent [nh] ;run by citizen -> to move-houses
+  if nh = current-neighborhood or nh = nobody [ stop ] ;if citizen tries to move to current neighborhood, we assume no move is necessary.
+  if [available_part_rent_houses] of nh < 1 [ stop ] ;don't move if there are no available houses.
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  move-to nh
+  set current-neighborhood nh
+  set housing-type "part-rent"
+  ask current-neighborhood [set available_part_rent_houses available_part_rent_houses - 1]
+  if [available_part_rent_houses] of current-neighborhood < 1 [ set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ] ] ;rerun the availability if a neighborhood has no more houses available.
+  set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
+end
+
+to move-neighborhoods-homeless ;run by citizen -> to move-houses
+  if housing-type = "buy" [ask current-neighborhood [set available_buy_houses available_buy_houses + 1]]
+  if housing-type = "part-rent" [ask current-neighborhood [set available_part_rent_houses available_part_rent_houses + 1]]
+  if housing-type = "social-rent" [ask current-neighborhood [set available_social_rent_houses available_social_rent_houses + 1]]
+  setxy 367 (-239)
+  set current-neighborhood 0
+  set housing-type "homeless"
+  set move-counter move-counter + 1
+  if citizen-color = "housing type" [ recolor-citizen ]
+end
+
+to move-houses ;run by citizen -> to consider-moving
+  ask links [ show "I should have been removed already." die ] ;to make sure no remnant links from previous agents are still present, ask them to clear out.
+  if available-neighborhoods-buy = nobody and available-neighborhoods-social-rent = nobody and available-neighborhoods-part-rent = nobody [ error "There are no neighborhoods!" stop]
+  let house-budget budget * 9.35
+  let affordable-buy-neighborhoods available-neighborhoods-buy with [avg_price <= house-budget and avg_price >= 0.75 * house-budget ]
+  let affordable-part-rent-neighborhoods available-neighborhoods-part-rent with [avg_price * 0.9 <= house-budget and avg_price * 0.9 >= 0.65 * house-budget ] ;assume renting is more afforable
+  let affordable-social-rent-neighborhoods available-neighborhoods-social-rent with [avg_price * 0.75 <= house-budget  and avg_price * 0.75 >= 0.5 * house-budget ] ;assume social renting is even more afforable
+  if social-class = "low" [ set affordable-buy-neighborhoods nobody ] ;This is ugly, I know. But it works to make sure social class looks at right housing type.
+  if social-class = "upper" or social-class = "middle" [ set affordable-social-rent-neighborhoods nobody ] ;same goes for this line.
+  
+  let all-candidates (turtle-set affordable-buy-neighborhoods affordable-social-rent-neighborhoods affordable-part-rent-neighborhoods)
+  ifelse count all-candidates < 1 [ move-neighborhoods-homeless stop]
+  [
+    if affordable-social-rent-neighborhoods != nobody [ ask affordable-social-rent-neighborhoods [ define-utility myself "social-rent" ] ]
+    let best-social-rent-option max-one-of social-rent-links [ utility ]
+    if is-agent? best-social-rent-option [ ask best-social-rent-option [ ask other social-rent-links [ die ] ] ]
+    if affordable-part-rent-neighborhoods != nobody [ ask affordable-part-rent-neighborhoods [ define-utility myself "part-rent" ] ]
+    let best-part-rent-option max-one-of part-rent-links [ utility ]
+    if is-agent? best-part-rent-option [ ask best-part-rent-option [ ask other part-rent-links [ die ] ] ]
+    if affordable-buy-neighborhoods != nobody [ ask affordable-buy-neighborhoods [ define-utility myself "buy" ] ]   
+    let best-buy-option max-one-of buy-links [ utility ]
+    if is-agent? best-buy-option [ ask best-buy-option [ ask other buy-links [ die ] ] ]
+    ;and the winner is..
+    let winner max-one-of ( link-set best-social-rent-option best-part-rent-option best-buy-option ) [utility]
+    if is-buy-link? winner [ move-neighbhorhoods-buy other-side best-buy-option ]
+    if is-part-rent-link? winner [ move-neighbhorhoods-part-rent other-side best-part-rent-option ]
+    if is-social-rent-link? winner [ move-neighbhorhoods-social-rent other-side best-social-rent-option ]
+    if not is-link? winner [ show "No winning link was reported." move-neighborhoods-homeless stop ] 
+  ]
+  ;Remove links between citizen and neighborhoods so the next citizen can start calculating.
+  ask links [die]
+  ;ask social-rent-links [die]
+  ;ask part-rent-links [die]
+  ;ask buy-links [die]
+end
+
+to create-migrants ;run by observer -> to time-tick
+  let influx-count item ( position "tot_eth" item 0 migration-data) item (y - 2016) migration-data * migrant-multiplier
+  ;define ethnicity locals
+  let p_dutch 0
+  let p_other_western 0
+  let p_antilles 0
+  let p_morocco 0
+  let p_indonesian 0
+  let p_suriname 0
+  let p_turkey 0
+  let p_eastern_eu 0
+  let p_other_nonwestern 0 
+  if influx-count > 0 [
+    set p_dutch item ( position "dutch" item 0 migration-data) item (y - 2016) migration-data / influx-count
+    set p_other_western ( item (position "other_western" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_dutch
+    set p_antilles ( item (position "antilles" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_other_western
+    set p_morocco ( item (position "morocco" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_antilles
+    set p_indonesian ( item (position "indonesian" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_morocco
+    set p_suriname ( item (position "suriname" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_indonesian
+    set p_turkey ( item (position "turkey" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_suriname
+    set p_eastern_eu ( item (position "eastern_eu" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_turkey
+    set p_other_nonwestern ( item (position "other_nonwestern" item 0 migration-data) item (y - 2016) migration-data / influx-count ) + p_eastern_eu
+  ]
+  ;define age locals
+  let tot_age item (position "tot_age" item 0 migration-data) item (y - 2016) migration-data
+  let p_young 0
+  let p_middle 0
+  let p_old 0
+  if tot_age > 0 [
+    set p_young item (position "young" item 0 migration-data) item (y - 2016) migration-data / tot_age
+    set p_middle ( item (position "middle" item 0 migration-data) item (y - 2016) migration-data / tot_age ) + p_young
+    set p_old ( item (position "old" item 0 migration-data) item (y - 2016) migration-data / tot_age ) + p_middle
+  ]
+  ;taking averages of education around the city as input for migrants. THIS IS QUITE A BIG ASSUMPTION
+  
+  create-citizens influx-count / 2 / aggregate-cluster-size [ ;assume household size of 2
+    setxy 367 (-239) set shape "person"
+    set size 8
+    set migrant? true
+    set housing-type "homeless"
+    ;lifephase
+    let dice_lifephase random-float 1
+    set lifephase (ifelse-value
+      dice_lifephase <= p_young [ "young" ]
+      dice_lifephase <= p_middle [ "middle" ]
+      dice_lifephase <= p_old [ "old" ]
+      [ "old" ]) ;assume rounding errors result in people being "old", this prevents errors when the model is run on 1:1 scale.
+                 ;age
+    set age (ifelse-value
+      lifephase = "young" [ random 20 ]
+      lifephase = "middle" [ random 45 + 20 ]
+      lifephase = "old" [ random 35 + 65 ]
+      [ random 35 + 65 ])
+    ;ethnicity
+    let dice_ethnicity random-float 1
+    set ethnicity (ifelse-value
+      dice_ethnicity <= p_dutch ["dutch"]
+      dice_ethnicity <= p_other_western [ "other_western" ]
+      dice_ethnicity <= p_antilles [ "antilles" ]
+      dice_ethnicity <= p_morocco [ "morocco" ]
+      dice_ethnicity <= p_indonesian [ "indonesian" ]
+      dice_ethnicity <= p_suriname [ "suriname" ]
+      dice_ethnicity <= p_turkey [ "turkey" ]
+      dice_ethnicity <= p_eastern_eu [ "eastern_european" ]
+      dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
+      [ "other_nonwestern" ])
+    ;income/budget
+    set budget round max list 0 random-normal avg_migrant_income ( avg_migrant_income * size-of-std ) ;assuming std of 1/8 the average.
+    set income (ifelse-value
+      budget <= 25000 [ "low" ]
+      budget <= 40000 [ "middle" ]
+      budget <= 100000 [ "high" ]
+      [ "high" ])
+    ;education
+    let dice_education random-float 1
+    set education (ifelse-value
+      dice_education <= p_edu_low [ "low" ]
+      dice_education <= p_edu_middle [ "middle" ]
+      dice_education <= p_edu_high [ "high" ]
+      [ "high" ]) ;THIS ASSUMES THE MIGRANTS HAVE SAME EDUCATION AS THE CITY AVERAGE!!
+    if not random-attributes? [
+      if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+      if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+    ]
+    calculate-social-class
+    move-houses
+    if citizen-color = "age" or citizen-color = "ethncity" [ recolor-citizen ]
+  ]
+end

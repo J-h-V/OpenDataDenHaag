@@ -1,0 +1,430 @@
+;Here I will add all procedures that change over time.
+
+to calculate-social-class ;run by citizen -> to import-citizens and to introduce-new-migrants
+                          ;To consider: currently only calculate social class when a citizen is created, should this be something that is recalcuted over time?
+  
+  ifelse income = "low" [
+    ifelse education = "low" [ set social-class "lower" ][ set social-class "working" ]
+  ]
+  [ ifelse income = "high" [
+    ifelse education = "high" [ set social-class "upper" ][ ifelse lifephase = "young" [ set social-class "working" ] [ set social-class "middle" ] ]
+    ]
+    [ ifelse education = "low" [ set social-class "working" ][ ifelse lifephase = "young" [ set social-class "working" ] [ set social-class "middle" ] ] ]
+  ]
+  ;above if-loop is quite hard to read, for further clarification see decision tree in report.
+  if citizen-color = "social group" [ recolor-citizen ]
+end
+
+to define-utility [c ownership] ;run by neighborhoods -> to move-houses
+  ifelse ownership = "social-rent"
+  ;here comes the social rent function
+  [create-social-rent-link-with c [
+    set color green  
+    set utility calculate-utility
+    ]
+  ]
+  [
+    ifelse ownership = "part-rent"
+    ;here comes the part rent function
+    [create-part-rent-link-with c [
+      set color yellow  
+      set utility calculate-utility
+      ]
+    ]
+    [
+      ifelse ownership = "buy"
+      ;here comes the buy function
+      [create-buy-link-with c [
+        set color red    
+        set utility calculate-utility
+        ]
+      ]
+      [ error "wrong ownership type!" ]
+    ]
+  ]
+end
+
+to-report retrieve-factors [variable class] ;run by neighborhoods -> multiple instances
+  report item (position class item 0 factor-data) item ((position variable factors) + 1) factor-data
+end
+
+
+to-report calculate-utility ;run by buy/rent-link -> to define-utility
+  let u -99 ;initialize utility
+  let c nobody 
+  let nh nobody
+  ask other-end [ set c self ] ;assign the agents to local variable
+  ask myself [ set nh self ]
+  if not is-agent? c or not is-agent? nh [ error "There seems to be no agents in this link!" ]
+  if [population] of nh < 1 [ show "This neighborhood is empty!" report -99 ] ;reporting -99 to make sure it is the lowest value
+  
+  ;to minimize computation, seperate calculations based on class
+  ;then, calculate factors and their respective significance
+  if [social-class] of c = "lower"
+  [
+    let ethnicity-score (ifelse-value
+      [ethnicity] of c = "dutch" [ [p-dutch] of nh ]
+      [ethnicity] of c = "other_western" [ [p-other-western] of nh ]
+      [ethnicity] of c = "antilles" [ [p-antilles] of nh ]
+      [ethnicity] of c = "morocco" [ [p-morocco] of nh ]
+      [ethnicity] of c = "indonesian" [ [p-indonesian] of nh ]
+      [ethnicity] of c = "suriname" [ [p-suriname] of nh ]
+      [ethnicity] of c = "turkey" [ [p-turkey] of nh ]
+      [ethnicity] of c = "eastern_european" [ [p-eastern-eu] of nh ]
+      [ethnicity] of c = "other_nonwestern" [ [p-other-nonwestern] of nh ]
+      [ 0 ])
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "lower"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include ethnicity prevalence, safety (crime)
+    report ethnicity-score - ( safety-score * safety-grade )
+  ]
+  
+  if [social-class] of c = "working"
+  [
+    let ethnicity-score (ifelse-value
+      [ethnicity] of c = "dutch" [ [p-dutch] of nh ]
+      [ethnicity] of c = "other_western" [ [p-other-western] of nh ]
+      [ethnicity] of c = "antilles" [ [p-antilles] of nh ]
+      [ethnicity] of c = "morocco" [ [p-morocco] of nh ]
+      [ethnicity] of c = "indonesian" [ [p-indonesian] of nh ]
+      [ethnicity] of c = "suriname" [ [p-suriname] of nh ]
+      [ethnicity] of c = "turkey" [ [p-turkey] of nh ]
+      [ethnicity] of c = "eastern_european" [ [p-eastern-eu] of nh ]
+      [ethnicity] of c = "other_nonwestern" [ [p-other-nonwestern] of nh ]
+      [ 0 ])    
+    let ethnicity-grade retrieve-factors "social cohesion" "working" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "working"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "working"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include ethnicity prevalence, safety (crime), health
+    report ( ethnicity-score * ethnicity-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade )
+  ]
+  
+  if [social-class] of c = "middle"
+  [
+    let social-class-score [p-sc-middle] of nh
+    let social-class-grade retrieve-factors "social cohesion" "middle" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "middle"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "middle"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "middle"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include social-class prevalence, safety (crimes), school and health proximity, average household size
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade )
+  ]
+  
+  if [social-class] of c = "upper"
+  [
+    let social-class-score [p-sc-upper] of nh
+    let social-class-grade retrieve-factors "social cohesion" "upper" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "upper"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "upper"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "upper"
+    let amenities-score [b_amenities] of nh
+    let amenities-grade retrieve-factors "amenities" "upper"
+    let horeca-score [b_horeca] of nh
+    let horeca-grade retrieve-factors "nuisance horeca" "upper"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include social-class prevalence, safety (crimes), school and health proximity, recreation and nature amenities.
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade ) + ( amenities-score * amenities-grade ) - ( horeca-score * horeca-grade )
+  ]
+  ;TODO schools. Should this be a positive or negative factor??
+  
+  
+  ;report an empty utility (0), if something goes wrong here.
+  report u
+  error "why did I get here?"
+end
+
+to-report calculate-utility-KPI ;run by citizens -> to update-KPIs
+  let u 0 ;initialize utility
+  let c self ;Normally, this is very dirty coding and unneccesary, however, this way:
+  let nh current-neighborhood ;I can easily verify the utility function stays the same as the original one.
+  if not is-agent? c or not is-agent? nh [ show "There seems to be no agents in this calculation!" report 0 ]
+  if [population] of nh < 1 [ report 0 ]
+  ;to minimize computation, seperate calculations based on class
+  ;then, calculate factors and their respective significance
+  if [social-class] of c = "lower"
+  [
+    let ethnicity-score (ifelse-value
+      [ethnicity] of c = "dutch" [ [p-dutch] of nh ]
+      [ethnicity] of c = "other_western" [ [p-other-western] of nh ]
+      [ethnicity] of c = "antilles" [ [p-antilles] of nh ]
+      [ethnicity] of c = "morocco" [ [p-morocco] of nh ]
+      [ethnicity] of c = "indonesian" [ [p-indonesian] of nh ]
+      [ethnicity] of c = "suriname" [ [p-suriname] of nh ]
+      [ethnicity] of c = "turkey" [ [p-turkey] of nh ]
+      [ethnicity] of c = "eastern_european" [ [p-eastern-eu] of nh ]
+      [ethnicity] of c = "other_nonwestern" [ [p-other-nonwestern] of nh ]
+      [ 0 ])
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "lower"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include ethnicity prevalence, safety (crime)
+    report ethnicity-score - ( safety-score * safety-grade )
+  ]
+  
+  if [social-class] of c = "working"
+  [
+    let ethnicity-score (ifelse-value
+      [ethnicity] of c = "dutch" [ [p-dutch] of nh ]
+      [ethnicity] of c = "other_western" [ [p-other-western] of nh ]
+      [ethnicity] of c = "antilles" [ [p-antilles] of nh ]
+      [ethnicity] of c = "morocco" [ [p-morocco] of nh ]
+      [ethnicity] of c = "indonesian" [ [p-indonesian] of nh ]
+      [ethnicity] of c = "suriname" [ [p-suriname] of nh ]
+      [ethnicity] of c = "turkey" [ [p-turkey] of nh ]
+      [ethnicity] of c = "eastern_european" [ [p-eastern-eu] of nh ]
+      [ethnicity] of c = "other_nonwestern" [ [p-other-nonwestern] of nh ]
+      [ 0 ])    
+    let ethnicity-grade retrieve-factors "social cohesion" "working" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "working"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "working"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include ethnicity prevalence, safety (crime), health
+    report ( ethnicity-score * ethnicity-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade )
+  ]
+  
+  if [social-class] of c = "middle"
+  [
+    let social-class-score [p-sc-middle] of nh
+    let social-class-grade retrieve-factors "social cohesion" "middle" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "middle"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "middle"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "middle"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include social-class prevalence, safety (crimes), school and health proximity, average household size
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade )
+  ]
+  
+  if [social-class] of c = "upper"
+  [
+    let social-class-score [p-sc-upper] of nh
+    let social-class-grade retrieve-factors "social cohesion" "upper" 
+    let safety-score [crimes] of nh / [population] of nh
+    let safety-grade retrieve-factors "safety" "upper"
+    let health-score [a_health] of nh
+    let health-grade retrieve-factors "health" "upper"
+    let household-score [avg_household_size] of nh / biggest-avg-household
+    let household-grade retrieve-factors "household size" "upper"
+    let amenities-score [b_amenities] of nh
+    let amenities-grade retrieve-factors "amenities" "upper"
+    let horeca-score [b_horeca] of nh
+    let horeca-grade retrieve-factors "nuisance horeca" "upper"
+    if [population] of nh < 1 [ error "This neighborhood is empty!" ]
+    
+    ;include social-class prevalence, safety (crimes), school and health proximity, recreation and nature amenities.
+    report ( social-class-score * social-class-grade ) - ( safety-score * safety-grade ) + ( health-score * health-grade ) - ( household-score * household-grade ) + ( amenities-score * amenities-grade ) - ( horeca-score * horeca-grade )
+  ]
+  ;TODO schools. Should this be a positive or negative factor??
+  
+  
+  ;report an empty utility (0), if something goes wrong here.
+  report u
+  error "why did I get here?"
+end 
+
+to-report other-side [l] ;run by citizen -> to move-houses
+  let nh nobody
+  ask l [set nh other-end]
+  if not is-agent? nh [ show "There is no turtle at the end of this link." report nobody ]
+  report nh
+end
+
+to update-neighborhoods ;run by observer -> to time-tick
+                        ;This procedure will update all statistics with regards to changes in the neighborhood every tick.
+                        ;Most stuff here are exogenous changes that are modeled as external pushes.
+                        ;housingmarket updates
+  let citizen-nhs neighborhoods with [population > 0 and houses > 0]
+  ask citizen-nhs [ set avg_price round ( avg_income * 9.35 ) ] ;update housing price according to average income of citizens (assuming market effects)
+  if housing-market-inflation? [ inflate-housing-prices ]
+  if build-more-houses? [ build-houses ]  
+  if transform-houses? [ transform-houses ]
+  if mixed-use-zoning? [ build-mixed ]
+  
+  ;change in amenities/safety
+  if improve-safety? [ improve-safety ]
+  if improve-health? [ improve-health ]
+  
+  ;citizen change from life/death
+  ask citizen-nhs [ let p_change nat_change / population
+    set population population + population * p_change
+    set available_buy_houses floor max list 0 (available_buy_houses + available_buy_houses * p_change)
+    set available_part_rent_houses floor max list 0 (available_part_rent_houses + available_part_rent_houses * p_change)
+    set available_social_rent_houses floor max list 0 (available_social_rent_houses + available_social_rent_houses * p_change)
+  ] 
+end
+
+to update-citizen-demographics ;run by observer -> to update
+  ask nhs-with-houses [
+    let citizens-of-me citizens with [ current-neighborhood = myself ]
+    set citizen-count count citizens-of-me
+    ifelse citizen-count > 0 [
+      set p-sc-lower precision ( count citizens-of-me with [social-class = "lower" ] / citizen-count ) 3
+      set p-sc-working precision ( count citizens-of-me with [social-class = "working" ] / citizen-count ) 3
+      set p-sc-middle precision ( count citizens-of-me with [social-class = "middle" ] / citizen-count ) 3
+      set p-sc-upper max list 0 ( precision ( ( 1 - ( p-sc-lower + p-sc-working + p-sc-middle ) ) ) 3 ) ;a minor, but significant optimization is to "calculate the last variable using the sum.
+      set p-dutch precision ( count citizens-of-me with [ethnicity = "dutch" ] / citizen-count ) 3
+      set p-other-western precision ( count citizens-of-me with [ethnicity = "other_western" ] / citizen-count ) 3
+      set p-antilles precision ( count citizens-of-me with [ethnicity = "antilles" ] / citizen-count ) 3
+      set p-morocco precision ( count citizens-of-me with [ethnicity = "morocco" ] / citizen-count ) 3
+      set p-suriname precision ( count citizens-of-me with [ethnicity = "indonesian" ] / citizen-count ) 3
+      set p-turkey precision ( count citizens-of-me with [ethnicity = "suriname" ] / citizen-count ) 3
+      set p-indonesian precision ( count citizens-of-me with [ethnicity = "turkey" ] / citizen-count ) 3
+      set p-eastern-eu precision ( count citizens-of-me with [ethnicity = "eastern_european" ] / citizen-count ) 3
+      set p-other-nonwestern max list 0 ( precision ( ( 1 - ( p-dutch + p-other-western + p-antilles + p-morocco + p-suriname + p-turkey + p-indonesian + p-eastern-eu ) ) ) 3 ) ;a minor, but significant optimization is to "calculate the last variable using the sum.
+      set avg_income round ( mean [budget] of citizens-of-me )
+    ]
+    [
+      set p-sc-lower 0
+      set p-sc-working 0
+      set p-sc-middle 0
+      set p-sc-upper 0
+      set p-dutch 0
+      set p-other-western 0
+      set p-antilles 0
+      set p-morocco 0
+      set p-suriname 0
+      set p-turkey 0
+      set p-indonesian 0
+      set p-eastern-eu 0
+      set p-other-nonwestern 0
+    ]
+  ]
+  let total-citizens count citizens
+  ifelse total-citizens > 0 [
+    set p_edu_low count citizens with [education = "low"] / total-citizens
+    set p_edu_middle count citizens with [education = "middle"] / total-citizens + p_edu_low
+    set p_edu_high count citizens with [education = "high"] / total-citizens + p_edu_middle
+  ]
+  [ set p_edu_low 0 set p_edu_middle 0 set p_edu_high 0 ]
+end
+
+to update-neighborhood-housing ;run by observer -> to update
+  set available-neighborhoods-part-rent neighborhoods with [ available_part_rent_houses > 0 ]
+  set available-neighborhoods-social-rent neighborhoods with [ available_social_rent_houses > 0 ]
+  set available-neighborhoods-buy neighborhoods with [ available_buy_houses > 0 ]
+end
+
+to-report calc-GINI [ percent ] ;run by observer -> graph in dashboard
+  let max-income max [budget] of citizens
+  let p percent / 100
+  let cum-citizens count citizens
+  report 1 - count citizens with [ budget >= max-income * p ] / cum-citizens
+end
+
+to inflate-housing-prices ;run by observer -> to update-neighborhoods
+  ask nhs-with-houses [
+    set avg_price round avg_price * 1.07 ;using Kadaster data, a "modest" 7% rise in value is assumed.
+  ]
+  ask citizens [
+    let dice 1.03 + random-float 0.08
+    set budget round budget * dice ;because of inflation, some people start earning more.  
+  ]
+end
+
+to build-houses ;run by observer -> to update-neighborhoods
+  ask min-n-of 5 neighborhoods with [houses > 0] [ available_buy_houses + available_part_rent_houses + available_social_rent_houses ] [
+    set available_buy_houses floor available_buy_houses * ( 1 + (build-percent / 100)) ;(assuming equal amount of building in every neighborhood).
+    set available_part_rent_houses floor available_part_rent_houses * ( 1 + (build-percent / 100))
+    set available_social_rent_houses floor available_social_rent_houses * ( 1 + (build-percent / 100))
+  ]
+end
+
+
+to transform-houses ;run by observer -> to update-neighborhoods
+  ask min-n-of 5 neighborhoods with [houses > 0] [ available_part_rent_houses + available_social_rent_houses ] [
+    let transformed available_buy_houses * transformed-percentage / 100 ;% of available houses for sale are bought by government, then transformed to rental property.
+    set available_buy_houses floor available_buy_houses - transformed
+    set available_part_rent_houses floor available_part_rent_houses + transformed
+    set available_social_rent_houses floor available_social_rent_houses + transformed
+  ]
+end
+
+to build-mixed ;run by observer -> to update-neighborhoods
+  ask mixed-use-nhs [
+    set available_buy_houses floor available_buy_houses + ( 60 / aggregate-cluster-size )
+    set available_part_rent_houses floor available_part_rent_houses + ( 140 / aggregate-cluster-size )
+    set available_social_rent_houses floor available_social_rent_houses + ( 200 / aggregate-cluster-size )
+    ask n-of ( floor 20 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-buy myself ]
+    ask n-of ( floor 45 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-part-rent myself ]
+    ask n-of ( floor 70 / aggregate-cluster-size ) citizens [ move-neighbhorhoods-social-rent myself ]
+  ]
+end
+
+to improve-safety ;run by observer -> to update-neighborhoods
+  ask max-n-of amount-of-safety-improved neighborhoods with [houses > 0] [crimes] [
+    set crimes crimes * (1 - random-float 0.15)  ;reduce crime by 0-15% in this neighborhood.
+  ]
+end
+
+to improve-health ;run by observer -> to update-neighborhoods
+  ask min-n-of amount-of-health-improved neighborhoods with [houses > 0] [a_health] [
+    set a_health a_health * 1.1 ;increase amount of GP offices per 1000 citizens by 10% in this neighborhood.
+  ]
+end
+
+to recolor-citizen ;run by citizens -> multiple instances
+  if recolor-agents? [
+    if citizen-color = "housing type" 
+    [
+      set color (ifelse-value
+        housing-type = "buy" [ blue ]
+        housing-type = "part-rent" [ green ]
+        housing-type = "social-rent" [ yellow ]
+        housing-type = "homeless" [ red ]
+        [ black ])
+    ]
+    if citizen-color = "social group" 
+    [
+      set color (ifelse-value
+        social-class = "upper" [ blue ]
+        social-class = "middle" [ green ]
+        social-class = "working" [ yellow ]
+        social-class = "lower" [ red ]
+        [ black ])
+    ]
+    if citizen-color = "ethncity" 
+    [
+      set color (ifelse-value
+        ethnicity = "dutch" [ orange ]
+        ethnicity = "other_western" [ blue ]
+        ethnicity = "antilles" [ brown ]
+        ethnicity = "morocco" [ yellow ]
+        ethnicity = "indonesian" [ violet ]
+        ethnicity = "suriname" [ green ]
+        ethnicity = "turkey" [ cyan ]
+        ethnicity = "eastern_european" [ red ]
+        ethnicity = "other_nonwestern" [ pink ]
+        [ black ])
+    ]
+    if citizen-color = "age" 
+    [
+      set color (ifelse-value
+        lifephase = "young" [ green ]
+        lifephase = "middle" [ yellow ]
+        lifephase = "old" [ red ]
+        [ black ])
+    ]
+  ]
+end

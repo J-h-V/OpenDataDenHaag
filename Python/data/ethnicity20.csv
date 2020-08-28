@@ -1,0 +1,115 @@
+"Buurten";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Antilliaans|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Autochtoon|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Indonesisch|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Marokkaans|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Oost-Europees|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Overig niet-Westers allochtoon|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Overig Westers allochtoon|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Surinaams|2020";"Kubus aantal inwoners (leeftijd, geslacht, migratieachtergrond)|Turks|2020"
+"01 Oud Scheveningen";32;2236;78;17;107;171;254;47;20
+"02 Vissershaven";47;2919;108;62;174;252;470;90;41
+"03 Scheveningen Badplaats";55;3573;216;25;214;538;862;90;21
+"04 Visserijbuurt";48;2500;147;53;140;342;596;73;17
+"05 v Stolkpark/Schev Bosjes";9;398;43;6;13;67;200;5;5
+"06 Waldeck-Zuid";41;1292;87;52;66;231;155;77;62
+"07 Statenkwartier";91;5134;497;29;284;860;2690;146;53
+"08 Geuzenkwartier";45;2924;128;47;116;295;546;66;36
+"09 Vogelwijk";22;3871;334;"x";94;195;758;54;14
+"10 Rond de Energiecentrale";206;2540;206;293;537;710;634;864;287
+"11 Kortenbos";233;3286;287;493;315;1172;1097;411;290
+"12 Voorhout";50;1148;79;33;118;338;636;48;39
+"13 Uilebomen";115;1134;127;221;116;708;457;262;87
+"14 Zuidwal";311;2793;299;339;353;1366;880;496;163
+"15 Schildersbuurt-West";327;1077;99;2608;1052;2267;474;2409;4097
+"16 Schildersbuurt-Noord";264;1157;88;2325;208;1622;321;1437;2627
+"17 Schildersbuurt-Oost";247;484;31;1954;281;1202;183;1108;1720
+"18 Huygenspark";920;1914;185;729;387;1749;1012;649;490
+"19 Laakhaven-Oost";383;825;81;511;231;1163;472;592;319
+"20 Moerwijk-Oost";160;765;43;371;277;580;139;375;445
+"21 Groente- en Fruitmarkt";76;544;19;414;493;579;310;789;2004
+"22 Laakhaven-West";390;1154;99;893;312;1128;295;842;1009
+"23 Spoorwijk";179;925;62;553;350;586;140;1006;618
+"24 Laakkwartier-West";262;2193;120;296;1907;1146;559;1104;401
+"25 Laakkwartier-Oost";408;3218;261;298;2824;1903;927;1281;407
+"26 Noordpolderbuurt";518;1319;125;1320;1341;1504;466;1190;721
+"30 Rustenburg";137;2738;154;188;1049;502;483;577;347
+"31 Oostbroek-Noord";113;1369;93;135;794;533;418;603;541
+"32 Transvaalkwartier-Noord";122;338;21;613;414;694;136;722;943
+"33 Transvaalkwartier-Midden";78;347;32;785;657;510;156;1003;1489
+"34 Transvaalkwartier-Zuid";104;463;36;813;1139;928;654;1313;1914
+"35 Oostbroek-Zuid";175;2022;131;193;1940;885;815;889;1292
+"36 Zuiderpark";"x";84;"x";"x";"x";7;7;6;"x"
+"37 Moerwijk-West";360;1435;87;958;418;1560;184;609;738
+"38 Moerwijk-Noord";330;1728;107;613;1034;1235;418;733;969
+"39 Moerwijk-Zuid";312;1179;43;764;210;944;158;629;594
+"40 Nieuw Waldeck";179;4403;224;308;396;584;393;490;287
+"41 Zorgvliet";5;334;45;"";30;57;143;"x";"x"
+"42 Stadhoudersplantsoen";20;1187;112;8;162;191;515;46;21
+"43 Sweelinckplein eo";55;3429;310;28;225;443;1214;153;29
+"44 Koningsplein eo";135;4116;248;167;524;641;1120;526;139
+"45 Zeeheldenkwartier";349;6047;458;465;416;1540;2121;620;301
+"46 Archipelbuurt";65;3521;368;42;166;524;1339;96;26
+"47 Willemspark";8;750;98;10;61;195;463;12;14
+"48 Nassaubuurt";7;913;95;"x";44;166;379;16;5
+"49 Haagse Bos";"x";257;27;"";21;65;96;5;"x"
+"50 Bloemenbuurt-West";12;1769;161;"x";30;71;224;37;8
+"51 Bloemenbuurt-Oost";65;4380;391;29;197;381;762;196;45
+"52 Bomenbuurt";61;3848;336;43;236;402;886;180;43
+"53 Vruchtenbuurt";76;5311;375;20;183;372;687;162;68
+"54 Heesterbuurt";152;3760;260;144;588;684;687;507;129
+"55 Valkenboskwartier";221;5229;371;298;1084;1190;1357;1504;343
+"60 Binckhorst";275;783;59;340;89;600;144;301;167
+"61 Landen";185;2199;215;325;271;1055;446;372;140
+"62 Rivierenbuurt-Zuid";79;242;21;18;116;177;100;78;19
+"63 Rivierenbuurt-Noord";221;1340;84;226;245;751;588;307;113
+"64 Bezuidenhout-West";133;971;77;228;189;937;537;330;103
+"65 Bezuidenhout-Midden";56;2229;234;19;206;841;902;99;43
+"66 Bezuidenhout-Oost";102;5251;401;44;398;1049;1516;212;91
+"67 Kampen";111;1142;129;101;139;470;274;133;55
+"68 Marlot";5;477;51;"";6;89;167;"x";"x"
+"69 Burgen en Horsten";156;3054;318;204;358;1222;662;369;142
+"70 Oostduinen";"";"";"";"";"";"";"";"";""
+"71 Belgisch Park";89;5165;359;62;313;791;1361;157;54
+"72 Rijslag";23;1153;69;5;47;108;215;32;16
+"73 Westbroekpark";8;690;81;"x";28;69;176;9;"x"
+"74 Duttendel";11;732;63;"x";31;74;184;6;""
+"75 Uilennest";13;1204;147;13;98;246;418;27;25
+"76 Duinzigt";17;1625;236;7;87;211;369;21;12
+"77 Waalsdorp";31;2425;227;"x";120;343;718;26;10
+"78 Arendsdorp";9;924;107;"x";33;226;385;15;10
+"79 v Hoytemastraat eo";18;1367;114;5;66;221;523;13;5
+"80 Morgenstond-Zuid";256;1514;132;700;869;1094;242;711;976
+"81 Bosjes van Pex";"x";275;32;"";"x";23;33;7;""
+"82 Rosenburg";73;2209;163;52;76;204;232;156;22
+"83 Eykenduynen";27;1910;145;13;80;114;255;61;16
+"84 Leyenburg";291;9135;589;256;1216;1138;1035;979;551
+"85 Kerketuinen/Zichtenburg";7;47;"x";5;"x";23;"x";17;"x"
+"86 Houtwijk";197;8176;421;539;500;955;715;841;541
+"87 Venen/Oorden/Raden";312;2076;166;1220;605;1362;332;901;1802
+"88 Morgenstond-West";167;2430;176;711;374;837;296;1243;1531
+"89 Morgenstond-Oost";303;2010;145;539;413;1023;241;628;690
+"90 Ockenburgh";19;527;30;12;21;81;99;31;6
+"91 Kijkduin";8;1176;83;"x";23;68;171;13;13
+"92 Bohemen/Meer en Bos";28;3271;317;12;87;210;479;69;17
+"93 Componistenbuurt";16;1300;140;"";55;101;196;30;5
+"94 Waldeck-Noord";28;2293;183;12;91;221;245;62;22
+"95 Kom Loosduinen";64;3672;116;93;243;321;306;207;56
+"96 Zijden/Steden/Zichten";246;2012;148;1081;644;1142;301;700;1794
+"97 Kraayenstein & Vroondaal";82;4716;235;78;191;471;644;279;112
+"98 Dreven en Gaarden";487;2824;219;1577;833;1508;356;1322;1868
+"99 De Uithof";5;1224;38;30;65;97;110;57;59
+"100 Duindorp";44;4792;109;33;195;255;384;58;32
+"101 Erasmus Veld";37;1158;126;125;29;170;126;238;168
+"102 Hoge Veld";132;4575;195;689;230;721;441;1140;1001
+"103 Parkbuurt Oosteinde";41;2147;151;52;55;298;264;301;94
+"104 Lage Veld";97;2148;115;380;99;403;195;481;360
+"105 Zonne Veld";69;1706;86;193;62;352;151;468;324
+"106 Vlietzoom-West";"x";144;6;"";"x";8;6;"x";""
+"107 Vliegeniersbuurt";"";"";"";"";"";"";"";"";""
+"108 Bosweide";13;1275;89;"x";39;209;288;62;9
+"109 Tedingerbroek";"";"";"";"";"";"";"";"";""
+"110 De Reef";"";23;"";7;"";113;"x";18;7
+"111 De Venen";52;804;45;97;58;234;112;272;125
+"112 Morgenweide";172;3756;213;304;190;907;512;764;361
+"113 Singels";111;3032;177;119;186;659;345;719;197
+"114 Waterbuurt";127;2528;162;196;163;527;266;592;265
+"115 De Bras";61;4045;152;166;102;350;432;359;169
+"116 Vlietzoom-Oost";"x";81;"x";"";"";"x";11;"x";""
+"117 De Rivieren";"";26;"";"";"";"";"";"";""
+"118 De Lanen";157;2928;165;205;118;731;292;647;230
+"119 De Velden";42;2415;136;152;67;532;230;442;151
+"120 De Vissen";125;5151;291;346;141;838;454;964;188
+"121 Rietbuurt";62;1450;76;181;63;331;149;338;108

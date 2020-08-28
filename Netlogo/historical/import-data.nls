@@ -1,0 +1,284 @@
+to load-data ;run by observer -> to setup
+  set nhc []
+  set factors []
+  set shape-data gis:load-dataset "data/buurten_32632.shp"
+  set housing-data csv:from-file "data/housing_data_17.csv"
+  set neighborhood-data csv:from-file "data/neighborhood_data_17.csv"
+  foreach but-first housing-data [x -> set nhc lput item 0 x nhc]
+  set ethnicity-data csv:from-file "data/ethnicity_17.csv"
+  set income-data csv:from-file "data/income_data.csv"
+  set education-data csv:from-file "data/education_data.csv"
+  set amenities-data csv:from-file "data/amenities_data.csv"
+  set movementage-data csv:from-file "data/movementage.csv"
+  ;set ov-data csv:from-file "data/ovstations.csv"
+  set crime-data csv:from-file "data/crime.csv"
+  set daycare-data csv:from-file "data/daycare.csv"
+  set factor-data csv:from-file "data/factors.csv"
+  foreach but-first factor-data [x -> set factors lput item 0 x factors]
+  set migration-data csv:from-file "data/migration_17.csv"
+end
+
+to-report retrieve-data [bc variable dataset] ;run by neighborhoods
+  if houses > 0 [
+    if not is-number? position bc nhc [error sentence bc "is no valid bc!"]
+    report item (position variable item 0 dataset) item ((position bc nhc) + 1) dataset
+  ]
+  ;Be aware, in the case that the neighborhood has no residents, it is not included in most datasets.
+  ;Therefore, running this procedure for a neighborhood without residents will always return 0.
+  if houses < 1 [
+    report 0]
+end
+
+to startup ;run by observer
+  set shape-data gis:load-dataset "data/buurten_32632.shp"
+  ; Note that setting the coordinate system here is optional, as
+  ; long as all of your datasets use the same coordinate system.
+  gis:load-coordinate-system "data/buurten_32632.prj"
+  gis:set-drawing-color white
+  gis:draw shape-data 2
+  gis:apply-coverage shape-data "BUURTCODE" buurtcode
+  gis:apply-coverage shape-data "BUURTNAAM" buurtname
+  gis:set-drawing-color 4
+  gis:fill shape-data 1
+  ; Set the world envelope to the union of all of our dataset's envelopes
+  gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of shape-data))
+end
+
+to initialize-neighborhoods ;run by observer -> to setup
+  foreach gis:feature-list-of shape-data [ vector-feature ->
+    let centroid gis:location-of gis:centroid-of vector-feature
+    ; centroid will be an empty list if it lies outside the bounds
+    ; of the current NetLogo world, as defined by our current GIS
+    ; coordinate transformation
+    if not empty? centroid
+    [ create-neighborhoods 1
+      [ set xcor item 0 centroid
+        set ycor item 1 centroid
+        set buurtnumber gis:property-value vector-feature "BUURTCODE"
+        set size 6
+        ;set population gis:property-value vector-feature "c_total"
+        set shape "house"
+        set label gis:property-value vector-feature "BUURTNAAM"
+      ]
+    ]
+  ]
+end  
+
+to initialize-neighborhoods-data ;run by observer -> to setup
+  ask neighborhoods [
+    ;housing-data
+    ifelse is-number? position buurtnumber nhc [
+      set houses item (position "houses" item 0 neighborhood-data) item ((position buurtnumber nhc) + 1) neighborhood-data ]
+    [ set houses 0 ]
+    ask neighborhood 62 [ set houses 0 ] ;hardcode the houses value of "Oostduinen", as the data is incorrect.
+    ifelse houses = 0 [set size 8 set color 8 set shape "x"] [set size 8 ]
+    set population retrieve-data buurtnumber "pop" neighborhood-data
+    set avg_household_size retrieve-data buurtnumber "avg_household_size" housing-data
+    set avg_price retrieve-data buurtnumber "avg_value" neighborhood-data
+    set p_free retrieve-data buurtnumber "p_free" housing-data
+    set owned_properties retrieve-data buurtnumber "owned_properties" neighborhood-data
+    set part_rent_properties retrieve-data buurtnumber "part_rent" neighborhood-data
+    set social_rent_properties retrieve-data buurtnumber "social_rent" neighborhood-data
+    if increase-social-housing? and population > 0 [
+      if part_rent_properties > increase-percent [
+        set part_rent_properties part_rent_properties - increase-percent
+        set social_rent_properties social_rent_properties + increase-percent
+      ]
+    ]
+    set available_buy_houses max list 0 floor ( (houses * owned_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_part_rent_houses max list 0 floor ( (houses * part_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    set available_social_rent_houses max list 0 floor ( (houses * social_rent_properties / 100 * p_free / 100) / aggregate-cluster-size )
+    ;natural-change
+    set nat_change retrieve-data buurtnumber "nat_change" neighborhood-data
+    ;citizen-data
+    set a_young retrieve-data buurtnumber "a_young" neighborhood-data
+    set a_middle retrieve-data buurtnumber "a_middle" neighborhood-data
+    set a_old retrieve-data buurtnumber "a_old" neighborhood-data
+    ;crime-data
+    set crimes retrieve-data buurtnumber "total" crime-data
+    ;ethnicity-data
+    set c_dutch retrieve-data buurtnumber "c_dutch" ethnicity-data
+    set c_other_western retrieve-data buurtnumber "c_other_western" ethnicity-data
+    set c_antilles retrieve-data buurtnumber "c_antilles" ethnicity-data
+    set c_morocco retrieve-data buurtnumber "c_morocco" ethnicity-data
+    set c_suriname retrieve-data buurtnumber "c_suriname" ethnicity-data
+    set c_turkey retrieve-data buurtnumber "c_turkey" ethnicity-data
+    set c_indonesian retrieve-data buurtnumber "c_indonesian" ethnicity-data
+    set c_eastern_eu retrieve-data buurtnumber "c_eastern_europe" ethnicity-data
+    set c_other_nonwestern retrieve-data buurtnumber "c_other_non_western" ethnicity-data
+    ;amenities-data
+    set b_horeca retrieve-data buurtnumber "a_horeca" neighborhood-data ;horaca per km2
+    set b_amenities retrieve-data buurtnumber "amenities" neighborhood-data ;amenities per km2
+    set a_health retrieve-data buurtnumber "a_health" neighborhood-data ;GP offices per 1000 citizens
+    set a_schools retrieve-data buurtnumber "a_schools" neighborhood-data ;primary school per km2
+    set d_super retrieve-data buurtnumber "d_super" amenities-data ;nearest big supermarket distance
+    set daycare_per_citizen retrieve-data buurtnumber "tot_c" daycare-data ;daycare capacity per capita
+    
+    ;education-data
+    set e_low retrieve-data buurtnumber "e_low" education-data
+    set e_middle retrieve-data buurtnumber "e_middle" education-data
+    set e_high retrieve-data buurtnumber "e_high" education-data
+    ;income-data
+    set avg_income retrieve-data buurtnumber "income" income-data
+    ;Fill missing data points using linear regression coefficient (b=9.35)
+    if avg_price < 1 and houses > 0 [ set avg_price round ( avg_income * 9.35 ) ]
+    if avg_income < 1 and houses > 0 [ set avg_income round ( avg_price / 9.35 ) ]
+  ]
+  if mixed-use-zoning? [
+    set mixed-use-nhs n-of amount-of-mixed-nhs neighborhoods with [ houses = 0 ] 
+    ask mixed-use-nhs [
+      set houses 1
+      set population 1
+      set shape "house"
+      set crimes mean [crimes] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set a_health mean [a_health] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set b_horeca mean [b_horeca] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set b_amenities mean [b_amenities] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_household_size mean [avg_household_size] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      ;TODO figure out a way to prevent social-cohesion from being 0.
+    ]
+  ]
+  ask neighborhoods with [ avg_price < 1 and houses > 0 ] [
+    if avg_price < 1 and houses > 0 [
+      let avg_price_around round mean [avg_price] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_price avg_price_around ] ;if previous fix did not help, use average of the whole city.
+  ]
+  ask neighborhoods with [ avg_income < 1 and houses > 0 ] [
+    if avg_income < 1 and houses > 0 [
+      let avg_income_around round mean [avg_income] of min-n-of 4 other neighborhoods with [ population > 0 ] [distance myself]
+      set avg_income avg_income_around ] ;if previous fix did not help, use average of the whole city.
+  ]
+  set biggest-avg-household [avg_household_size] of max-one-of neighborhoods [avg_household_size]
+  set nhs-with-houses neighborhoods with [ houses > 0 ]
+end
+
+to import-citizens ;run by observer -> to setup
+  ask neighborhoods with [houses > 0] [
+    let household-count floor houses / aggregate-cluster-size
+    ;housing type locals
+    let p-buy-houses floor owned_properties / aggregate-cluster-size
+    let p-part-rent-houses floor part_rent_properties / aggregate-cluster-size + p-buy-houses
+    let p-social-rent-houses floor social_rent_properties / aggregate-cluster-size + p-part-rent-houses 
+    ;lifephase locals
+    let pop_a ( a_young + a_middle + a_old )
+    let p_young 0
+    let p_middle 0
+    let p_old 0
+    if pop_a > 0 [
+      set p_young a_young / pop_a
+      set p_middle ( a_middle / pop_a ) + p_young
+      set p_old ( a_old / pop_a ) + p_middle
+    ]
+    ;ethnicity locals
+    let pop_c ( c_dutch + c_other_western + c_antilles + c_morocco + c_indonesian + c_suriname + c_turkey + c_eastern_eu + c_other_nonwestern)
+    let p_dutch 0
+    let p_other_western 0
+    let p_antilles 0
+    let p_morocco 0
+    let p_indonesian 0
+    let p_suriname 0
+    let p_turkey 0
+    let p_eastern_eu 0
+    let p_other_nonwestern 0
+    if pop_c > 0 [
+      set p_dutch c_dutch / pop_c
+      set p_other_western ( c_other_western / pop_c ) + p_dutch
+      set p_antilles ( c_antilles / pop_c ) + p_other_western
+      set p_morocco ( c_morocco / pop_c ) + p_antilles
+      set p_indonesian ( c_indonesian / pop_c ) + p_morocco
+      set p_suriname ( c_suriname / pop_c ) + p_indonesian
+      set p_turkey ( c_turkey / pop_c ) + p_suriname
+      set p_eastern_eu ( c_eastern_eu / pop_c ) + p_turkey
+      set p_other_nonwestern ( c_other_nonwestern / pop_c ) + p_eastern_eu
+    ]    
+    ;education locals
+    let pop_e ( e_low + e_middle + e_high )
+    let p_e_low 0
+    let p_e_middle 0
+    let p_e_high 0
+    if pop_e > 0 [
+      set p_e_low e_low / pop_e
+      set p_e_middle ( e_middle / pop_e ) + p_e_low
+      set p_e_high ( e_high / pop_e ) + p_e_middle
+    ]
+    ;creating the actual citizens within the neighborhood
+    hatch-citizens household-count [
+      set label ""
+      set shape "person"
+      set size 8
+      set current-neighborhood myself
+      set migrant? false
+      ;lifephase
+      let dice_lifephase random-float 1
+      set lifephase (ifelse-value
+        dice_lifephase <= p_young [ "young" ]
+        dice_lifephase <= p_middle [ "middle" ]
+        dice_lifephase <= p_old [ "old" ]
+        [ "old" ]) ;assume rounding errors result in people being "old", this prevents errors when the model is run on 1:1 scale.
+                   ;age
+      set age (ifelse-value
+        lifephase = "young" [ random 20 ]
+        lifephase = "middle" [ random 45 + 20 ]
+        lifephase = "old" [ random 35 + 65 ]
+        [ random 35 + 65 ])
+      ;ethnicity
+      let dice_ethnicity random-float 1
+      set ethnicity (ifelse-value
+        dice_ethnicity <= p_dutch ["dutch"]
+        dice_ethnicity <= p_other_western [ "other_western" ]
+        dice_ethnicity <= p_antilles [ "antilles" ]
+        dice_ethnicity <= p_morocco [ "morocco" ]
+        dice_ethnicity <= p_indonesian [ "indonesian" ]
+        dice_ethnicity <= p_suriname [ "suriname" ]
+        dice_ethnicity <= p_turkey [ "turkey" ]
+        dice_ethnicity <= p_eastern_eu [ "eastern_european" ]
+        dice_ethnicity <= p_other_nonwestern [ "other_nonwestern" ]
+        [ "other_nonwestern" ])
+      ;income/budget
+      set budget round max list 0 random-normal [avg_income] of myself ( [avg_income] of myself * size-of-std ) ;assuming std of 1/8 the average.
+      set income (ifelse-value
+        budget <= 25000 [ "low" ]
+        budget <= 40000 [ "middle" ]
+        budget <= 100000 [ "high" ]
+        [ "high" ])
+      ;education
+      let dice_education random-float 1
+      set education (ifelse-value
+        dice_education <= p_e_low [ "low" ]
+        dice_education <= p_e_middle [ "middle" ]
+        dice_education <= p_e_high [ "high" ]
+        [ "high" ])
+      if not random-attributes? [
+        if education = "high" and income = "low" [ if random-float 1 < 0.5 [ set education "low" ] ]
+        if education = "low" and income = "high" [ if random-float 1 < 0.5 [ set education "high" ] ]
+      ]
+      ;housing-type
+      if random-attributes?[
+        let dice_housing random-float 1
+        (ifelse
+          dice_housing <= p-buy-houses [set housing-type "buy"]
+          dice_housing <= p-part-rent-houses [set housing-type "part-rent"]
+          dice_housing <= p-social-rent-houses [set housing-type "social-rent"]
+          [ move-neighborhoods-homeless ])
+      ]
+    ]
+    if not random-attributes? [
+      let owned_prop_occupied (owned_properties - (owned_properties * p_free / 100 )) / aggregate-cluster-size
+      let part_rent_occupied (part_rent_properties - (part_rent_properties * p_free / 100 )) / aggregate-cluster-size
+      let social_rent_occupied (social_rent_properties - (social_rent_properties * p_free / 100 )) / aggregate-cluster-size
+      ask max-n-of owned_prop_occupied (citizens with [current-neighborhood = myself]) [budget] [ set housing-type "buy" ]
+      ask max-n-of part_rent_occupied (citizens with [current-neighborhood = myself and housing-type = 0]) [budget] [ set housing-type "part-rent" ]
+      ask max-n-of social_rent_occupied (citizens with [current-neighborhood = myself and housing-type = 0]) [budget] [ set housing-type "social-rent" ]
+      ask citizens with [current-neighborhood = myself and housing-type = 0] [ move-neighborhoods-homeless ]
+    ]
+  ]
+  
+  ask citizens [
+    calculate-social-class
+    if citizen-color = "age" or citizen-color = "ethncity" [ recolor-citizen ]
+  ]
+  ;calculate tallies for neighborhoods
+  update-neighborhood-housing
+  update-citizen-demographics
+  ask citizens with [ housing-type = "homeless" ] [ move-houses ]
+end
