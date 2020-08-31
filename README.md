@@ -160,7 +160,7 @@ Project Link: [https://github.com/Jochem285/OpenDataDenHaag](https://github.com/
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/Jochem285/repo.svg?style=flat-square
-[contributors-url]: 
+[contributors-url]: https://github.com/Jochem285/OpenDataDenHaag/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/Jochem285/repo.svg?style=flat-square
 [forks-url]: https://github.com/Jochem285/OpenDataDenHaag/network/members
 [stars-shield]: https://img.shields.io/github/stars/Jochem285/repo.svg?style=flat-square
