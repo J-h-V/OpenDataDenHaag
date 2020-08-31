@@ -69,8 +69,8 @@ Here's a blank template to get started:
 
 ### Built With
 
-* [Netlogo]()
-* [Python]()
+* [Netlogo](#netlogo)
+* [Python](#python)
 * []()
 
 
@@ -140,7 +140,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@JochemVlug](https://twitter.com/JochemVlug) - email
+Jochem Vlug - [@JochemVlug](https://twitter.com/JochemVlug) 
 
 Project Link: [https://github.com/Jochem285/OpenDataDenHaag](https://github.com/Jochem285/OpenDataDenHaag)
 
