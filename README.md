@@ -71,8 +71,9 @@ Here's a blank template to get started:
 
 * [Netlogo](#netlogo)
 * [Python](#python)
-* []()
-
+* [Excel](#excel)
+* [HTML](#HTML)
+* [Latex](#latex)
 
 
 <!-- GETTING STARTED -->
@@ -159,15 +160,15 @@ Project Link: [https://github.com/Jochem285/OpenDataDenHaag](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Jochem285/repo.svg?style=flat-square
+[contributors-shield]: https://img.shields.io/github/contributors/Jochem285/OpenDataDenHaag.svg?style=flat-square
 [contributors-url]: https://github.com/Jochem285/OpenDataDenHaag/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Jochem285/repo.svg?style=flat-square
+[forks-shield]: https://img.shields.io/github/forks/Jochem285/OpenDataDenHaag.svg?style=flat-square
 [forks-url]: https://github.com/Jochem285/OpenDataDenHaag/network/members
-[stars-shield]: https://img.shields.io/github/stars/Jochem285/repo.svg?style=flat-square
+[stars-shield]: https://img.shields.io/github/stars/Jochem285/OpenDataDenHaag.svg?style=flat-square
 [stars-url]: https://github.com/Jochem285/OpenDataDenHaag/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Jochem285/repo.svg?style=flat-square
+[issues-shield]: https://img.shields.io/github/issues/Jochem285/OpenDataDenHaag.svg?style=flat-square
 [issues-url]: https://github.com/Jochem285/OpenDataDenHaag/issues
-[license-shield]: https://img.shields.io/github/license/Jochem285/repo.svg?style=flat-square
+[license-shield]: https://img.shields.io/github/license/Jochem285/OpenDataDenHaag.svg?style=flat-square
 [license-url]: https://github.com/Jochem285/OpenDataDenHaag/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/jochemvlug
