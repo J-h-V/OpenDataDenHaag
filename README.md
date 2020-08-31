@@ -23,10 +23,11 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">YOUR_TITLE</h3>
+  <h3 align="center">The Impact of Migration and Urbanization on Cities: an Agent-Based Model on the effects of Migration on the city of The Hague</h3>
 
   <p align="center">
-    YOUR_SHORT_DESCRIPTION
+    Welcome to the GitHub page for my Master Thesis project! In this project, I am building a Data-Driven Agent-Based model (using Python and Netlogo) to simulate the behavior of citizens in the city of The Hague, The Netherlands.
+	The key focus of the project is to observe the decision-making process of migrants who enter the city as new citizens and the resulting changes to the city with regards to their decision on where to live. 
     <br />
     <a href="https://github.com/Jochem285/OpenDataDenHaag"><strong>Explore the docs »</strong></a>
     <br />
@@ -64,14 +65,12 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`Jochem285`, `OpenDataDenHaag`, `JochemVlug`, `email`
 
 
 ### Built With
 
-* []()
-* []()
+* [Netlogo]()
+* [Python]()
 * []()
 
 
@@ -161,19 +160,19 @@ Project Link: [https://github.com/Jochem285/OpenDataDenHaag](https://github.com/
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/Jochem285/repo.svg?style=flat-square
-[contributors-url]: https://github.com/Jochem285/repo/graphs/contributors
+[contributors-url]: 
 [forks-shield]: https://img.shields.io/github/forks/Jochem285/repo.svg?style=flat-square
-[forks-url]: https://github.com/Jochem285/repo/network/members
+[forks-url]: https://github.com/Jochem285/OpenDataDenHaag/network/members
 [stars-shield]: https://img.shields.io/github/stars/Jochem285/repo.svg?style=flat-square
-[stars-url]: https://github.com/Jochem285/repo/stargazers
+[stars-url]: https://github.com/Jochem285/OpenDataDenHaag/stargazers
 [issues-shield]: https://img.shields.io/github/issues/Jochem285/repo.svg?style=flat-square
-[issues-url]: https://github.com/Jochem285/repo/issues
+[issues-url]: https://github.com/Jochem285/OpenDataDenHaag/issues
 [license-shield]: https://img.shields.io/github/license/Jochem285/repo.svg?style=flat-square
-[license-url]: https://github.com/Jochem285/repo/blob/master/LICENSE.txt
+[license-url]: https://github.com/Jochem285/OpenDataDenHaag/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/Jochem285
+[linkedin-url]: https://linkedin.com/in/jochemvlug
 [product-screenshot]: images/screenshot.png
 
 
 
-Welcome to the GitHub page for my Master Thesis project! In this project, I am building a Data-Driven Agent-Based model (using Python and Netlogo) to simulate the behavior of citizens in the city of The Hague, The Netherlands. The key focus of the project is to observe the decision-making process of migrants who enter the city as new citizens and the resulting changes to the city with regards to their decision on where to live. 
+
